@@ -7,7 +7,7 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'er
 export interface Message {
   id: string; // ID único para el mensaje
   type: 'sent' | 'received';
-  data: string | object;
+  data: string | object | any;
   timestamp: number;
 }
 

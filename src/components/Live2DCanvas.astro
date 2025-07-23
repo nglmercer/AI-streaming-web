@@ -43,5 +43,128 @@ import {
 -->
 <script>
   import './live2d-handler.ts';
-  
+import { WsConnectionManager } from '../lib/WsConnectionManager';
+import type { ConnectionState, Message } from '../lib/types';
+import { emitter } from '../lib/Emitter';
+// 1. new Class
+const wsManager = new WsConnectionManager();
+const template = (text: string, type: string = 'text-input'): {
+  type: string;
+  text: string;
+  images: string[];
+} => {
+  return {
+    type,
+    text,
+    images: []
+  }
+}
+// 2.Listeners
+wsManager.on('connectionStatusChange', (state: ConnectionState) => {
+  console.log(`[MANAGER] Estado de '${state.id}' cambió a: ${state.status}`);
+});
+
+wsManager.on('message', (data: { connectionId: string; message: Message }) => {
+  console.log(`[MANAGER] Mensaje recibido en '${data.connectionId}':`, data.message.data);
+});
+
+wsManager.on('connectionCreated', (state: ConnectionState) => {
+    console.log(`[MANAGER] Conexión '${state.name}' (${state.id}) ha sido creada.`);
+});
+
+// 3. Crear múltiples conexiones
+// Usaremos un servicio de echo público para las pruebas.
+const wsExampel = "ws://127.0.0.1:12393/client-ws"
+// Conexión 1: Echo Básico
+const onError = (...args:any) => {
+  console.log('CALLBACK:', ...args);
+  changeStateIndicator('disconnected')
+}
+const onConnect = (data: any) => {
+    console.log("onConnect",data);
+    changeStateIndicator('connected')
+}
+const onMessages = (data: Message) => {
+  if (!data || !data.data) return;
+  console.log("onMessages",data)
+  console.log("data.type",data.data)
+  const {type} = data.data;
+  if (type === 'audio') {
+    playActionAudio(data.data);
+  }
+}
+wsManager.createConnection({
+  id: 'ws_api',
+  name: 'Echo Server Básico',
+  url: wsExampel, // Un servidor de echo público y confiable
+  onOpen: onConnect,
+  onMessage: onMessages,
+  onClose: onError,
+});
+//wsManager.connect('ws_api');
+const ws_api = wsManager.getConnection('ws_api');
+emitter.on('send:text-input', (data: string) => {
+  const templateData = template(data);
+  if (!ws_api) return;
+  ws_api.send(templateData);
+})
+type DisplayText = {
+  text: string;
+  name: string;
+  avatar: string;
+};
+
+type ActionAudio = {
+  type: 'audio';
+  audio: string;          // base64
+  display_text: DisplayText;
+  forwarded: boolean;
+  slice_length: number;
+  volumes: number[];
+};
+function base64ToBlob(b64: string): Blob {
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  return new Blob([bytes], { type: 'audio/wav' });
+}
+function playActionAudio(action: ActionAudio): void {
+  const blob = base64ToBlob(action.audio);
+  const url  = URL.createObjectURL(blob);
+  const audioEl = new Audio(url);
+  console.log("process audio",audioEl);
+
+  audioEl.play()
+         .then(() => console.log('Reproduciendo…'))
+         .catch(e  => console.error('Error al reproducir:', e));
+}
+//console.log("ws_api",ws_api)
+
+
+/*
+{"type": 'text-input',"text": 'de que tamaño crees que es el universo?',"images": []}
+{"type":"add-client-to-group","invitee_uid":"571495c2-8dcb-4a74-8979-d6ad51dece1a"}
+*/
+
+/*
+const sendMessage = wsManager.send('ws_api', template('de que tamaño crees que es el universo?'));
+console.log("sendMessage",sendMessage)
+*/
+
+/* 
+wsManager.connect('echo-2'); 
+{"type":"text-input","text":"COMO ESTAS","images":[]}
+*/
+async function initializeConnection(){
+    const button_connect = document.getElementById('ws_status');
+    ws_api?.connect();//non return
+    if (!button_connect) return;
+    button_connect.addEventListener('click', () => {
+        ws_api?.connect();
+    })
+}
+async function changeStateIndicator(text:string){
+    const button_connect = document.getElementById('ws_status') as HTMLButtonElement
+    if (typeof text !== 'string' || !button_connect) return;
+    button_connect.textContent = text
+}
+document.addEventListener('DOMContentLoaded', initializeConnection);
 </script>
