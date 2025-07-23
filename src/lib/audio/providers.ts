@@ -1,5 +1,5 @@
 import { Emitter } from '../Emitter';
-import { speakWithLipSync, stopLipSyncAudio } from '../../components/live2d-handler'; 
+import { speakWithLipSync, stopLipSyncAudio, triggerRandomExpression, triggerRandomMotion } from '../../components/live2d-handler'; 
 import type { audioEvent } from '../../components/types/ws_model'
 
 // Interfaz para la configuración del TTS Provider
@@ -119,7 +119,9 @@ export class WebSocketAudioProvider extends TTSProvider {
    * @param opts - Opciones adicionales.
    * @returns Una promesa que se resuelve cuando el audio termina.
    */
-  async speak(audioBase64: string, opts: SpeakOptions | audioEvent = {}): Promise<void> {
+  async speak(audioBase64: string, opts: audioEvent ={
+    type:'audio'
+  }): Promise<void> {
     return new Promise((resolve, reject) => {
       // Detenemos cualquier audio anterior que este proveedor estuviera reproduciendo.
       this.stop(); 
@@ -138,8 +140,8 @@ export class WebSocketAudioProvider extends TTSProvider {
         // Ya no creamos nuestro propio new Audio().
 
         this.emitter.emit('audio:play', { provider: this.constructor.name });
-        if (opts && opts.actions){
-          
+        if (opts && opts.actions && opts.actions.expressions){
+          triggerRandomExpression(opts.actions.expressions?.[0])
         }
         speakWithLipSync(
           url,

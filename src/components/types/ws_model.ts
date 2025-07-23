@@ -64,7 +64,7 @@ export interface MessageEvent {
   display_text?: DisplayText;
 }
 export interface audioEvent extends BaseEvent {
-  audio: string;
+  audio?: string;
   actions?: Actions;
   display_text?: DisplayText;
   forwarded?: boolean;

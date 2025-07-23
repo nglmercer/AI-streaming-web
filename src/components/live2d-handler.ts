@@ -95,7 +95,7 @@ function getAvailableExpressions(): string[] {
     const expressionManager = currentModel.internalModel.motionManager.expressionManager;  
     return expressionManager?.definitions.map(d => d.name) || [];  
 }
-function triggerRandomExpression() {  
+function triggerRandomExpression(expression:string |number |any) {  
     if (!currentModel) return;  
       
     // Usar el expressionManager del módulo lipsync  
@@ -108,7 +108,7 @@ function triggerRandomExpression() {
     const randomIndex = Math.floor(Math.random() * expressions.length);  
     const randomExpression = expressions[randomIndex].name;  
       
-    expressionManager.setExpression(randomExpression);  
+    expressionManager.setExpression(expression || randomExpression);  
 }  
 
 function triggerRandomMotion(expression:string | any='tap_body') {  
@@ -164,5 +164,6 @@ export {
     speakWithLipSync,
     getAvailableExpressions,
     triggerRandomExpression,
+    triggerRandomMotion,
     stopLipSyncAudio
 }
