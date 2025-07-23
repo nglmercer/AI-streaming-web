@@ -1,0 +1,98 @@
+---
+// src/components/NewConnectionForm.astro
+---
+
+<!-- 
+  El formulario usa clases de TailwindCSS para el estilo.
+  Le damos un ID único para poder seleccionarlo fácilmente en el script.
+-->
+<form id="new-connection-form" class="p-6 border border-zinc-700 rounded-lg bg-zinc-800 text-white mb-6 shadow-lg">
+  <h3 class="text-xl font-bold mb-4 text-center">Crear Nueva Conexión</h3>
+  
+  <!-- Usamos un grid para el layout, similar al original -->
+  <div class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-3 items-center mb-6">
+    <label for="conn-id" class="font-semibold text-right">ID Único</label>
+    <input 
+      type="text" 
+      id="conn-id" 
+      required 
+      class="p-2 bg-zinc-700 border border-zinc-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+    />
+
+    <label for="conn-name" class="font-semibold text-right">Nombre (Opcional)</label>
+    <input 
+      type="text" 
+      id="conn-name" 
+      placeholder="Ej: Servidor de Chat"
+      class="p-2 bg-zinc-700 border border-zinc-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition" 
+    />
+
+    <label for="conn-url" class="font-semibold text-right">URL del WebSocket</label>
+    <input 
+      type="url" 
+      id="conn-url" 
+      required 
+      placeholder="wss://..."
+      class="p-2 bg-zinc-700 border border-zinc-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+    />
+  </div>
+
+  <button type="submit" class="w-full py-2.5 px-4 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-800 focus:ring-blue-500 transition-colors">
+    Crear Conexión
+  </button>
+</form>
+
+<script>
+  // Este script se ejecuta en el cliente (navegador)
+  import { emitter } from '../lib/Emitter';
+  import type { ConnectionOptions } from '../lib/types';
+
+  // Función para generar un ID aleatorio, como en el original
+  const generateId = () => `conn-${Math.random().toString(36).substring(2, 7)}`;
+
+  // Seleccionamos los elementos del DOM que necesitamos
+  const form = document.querySelector<HTMLFormElement>('#new-connection-form');
+  const idInput = document.querySelector<HTMLInputElement>('#conn-id');
+  const nameInput = document.querySelector<HTMLInputElement>('#conn-name');
+  const urlInput = document.querySelector<HTMLInputElement>('#conn-url');
+
+  // Asegurarnos de que los elementos existen antes de continuar
+  if (form && idInput && nameInput && urlInput) {
+    // Establecer valores iniciales
+    idInput.value = generateId();
+    nameInput.value = 'Mi Conexión de Prueba';
+    urlInput.value = 'wss://socketsbay.com/wss/v2/1/demo/';
+
+    // Manejar el envío del formulario
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+      const id = idInput.value;
+      const name = nameInput.value;
+      const url = urlInput.value;
+
+      // Validación
+      if (!id || !url) {
+        alert('El ID y la URL son obligatorios.');
+        return;
+      }
+      
+      const connectionData: ConnectionOptions = {
+        id,
+        url,
+        // Si el nombre está vacío, no lo incluimos (undefined)
+        name: name || undefined,
+      };
+      const eventName = 'ws:create';
+      console.log('Emitiendo evento con:',eventName, connectionData);
+      
+      // LA LÍNEA CLAVE ESTÁ AQUÍ: Usamos el emitter para enviar los datos
+      emitter.emit(eventName, connectionData);
+      
+      // Resetear los campos del formulario
+      idInput.value = generateId();
+      nameInput.value = '';
+      urlInput.value = '';
+    });
+  }
+</script>

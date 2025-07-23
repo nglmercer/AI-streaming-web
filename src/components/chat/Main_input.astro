@@ -1,0 +1,45 @@
+---
+export interface Props {
+  label?: string;
+}
+const { label = 'idle' } = Astro.props;
+---
+
+<!-- src/components/ActionBar.astro -->
+<div class="flex flex-col gap-2 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 w-full">
+  <!-- label -->
+  <div class="flex items-center">
+    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{label}</span>
+  </div>
+
+  <!-- top buttons -->
+  <div class="flex items-center gap-2">
+    <button
+      aria-label="Start"
+      class="p-2 rounded-full text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+    >
+      <span class="material-symbols-outlined text-lg">mic_off</span>
+    </button>
+    <button
+      aria-label="Raise hand"
+      class="p-2 rounded-full text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+    >
+      <span class="material-symbols-outlined text-xl">back_hand</span>
+    </button>
+  </div>
+
+  <!-- file + textarea row -->
+  <div class="flex items-center gap-2">
+    <button
+      aria-label="Attach file"
+      class="p-2 rounded-full text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+    >
+      <span class="material-symbols-outlined text-xl">attach_file</span>
+    </button>
+    <textarea
+      rows="1"
+      placeholder="Type your message..."
+      class="flex-1 resize-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    ></textarea>
+  </div>
+</div>

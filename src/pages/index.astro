@@ -1,0 +1,89 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SettingsDrawer from '../components/SettingsDrawer.svelte';
+import Live2DCanvas from '../components/Live2DCanvas.astro';
+import MainInput from '../components/chat/Main_input.astro';
+---
+
+<Layout title="WebSocket Client">
+      <div class="layout">
+        <aside class="sidebar">
+          <button id="toggleBtn" onclick="  const sidebar = document.querySelector('.sidebar');
+          sidebar.classList.toggle('expanded');">☰</button>
+          <nav>
+            <a href="#">🏠</a>
+            <a href="#">📄</a>
+            <a href="#">⚙️</a>
+          </nav>
+        </aside>
+
+        <main class="grid">
+              <Live2DCanvas />
+              <footer class="footer p-2">
+                <MainInput label="Chat" />
+              </footer>
+        </main>
+
+      </div>
+</Layout>
+<style>
+.layout {
+  display: grid;
+  grid-template-columns: auto 1fr; /* Sidebar + contenido */
+  grid-template-rows: 100vh; /* Ocupa toda la altura */
+}
+
+.sidebar {
+  background: #1e1e2f;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px 0;
+  width: 70px; /* Colapsado */
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+.sidebar.expanded {
+  width: 250px; /* Expandido */
+}
+
+.sidebar button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.sidebar nav {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.sidebar nav a:hover {
+  background: #333;
+}
+
+.sidebar nav a span {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.expanded nav a span {
+  opacity: 1;
+}
+</style>

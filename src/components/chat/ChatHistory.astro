@@ -1,0 +1,92 @@
+---
+
+---
+<div
+  id="chat-history"
+  class="flex flex-col gap-3 overflow-y-auto h-full p-3 bg-slate-50 dark:bg-slate-900"
+>
+</div>
+
+<script>
+ 
+  interface Messages{
+    id: string;
+    role: 'user' | 'ai';
+    avatar?: string;
+    text: string;
+    time?: string;
+    textChunk?: string;
+  };
+
+
+  const messages: Messages[] = [] 
+
+  const templates: any = {
+    message: ({ id, role, avatar, text, time }: Messages) => /* html */ `
+      <section
+        aria-label="${role === 'user' ? 'Me' : 'AI'}: ${time || ''}"
+        class="flex items-end gap-2 ${role === 'user' ? 'justify-end' : 'justify-start'}"
+        data-role="${role}"
+      >
+        ${role === 'ai' ? templates.avatar(avatar, 'A') : ''}
+        <div
+          class="max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-2xl text-sm ${
+            role === 'user'
+              ? 'bg-blue-600 text-white rounded-br-none'
+              : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-none'
+          }"
+        >
+          <span data-content="${id}">${text}</span>
+        </div>
+        ${role === 'user' ? templates.avatar(avatar, 'M', true) : ''}
+      </section>
+    `,
+
+    avatar: (src?: string, fallback = 'A', isUser = false) => /* html */ `
+      <div class="flex-shrink-0 w-8 h-8 rounded-full ${
+        isUser ? 'bg-blue-600 text-white' : 'bg-slate-300 dark:bg-slate-700'
+      } flex items-center justify-center text-sm font-bold">
+        ${
+          src
+            ? `<img src="${src}" class="w-full h-full rounded-full" alt="avatar" />`
+            : fallback
+        }
+      </div>
+    `,
+  };
+
+  const container = document.getElementById('chat-history') as HTMLDivElement;
+
+  function scrollToBottom() {
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ✅ Agregar o actualizar mensaje parcialmente (para streaming)
+  function upsertMessage({id, role, textChunk, avatar, time}: Messages) {
+    let span = container.querySelector(`[data-content="${id}"]`);
+    if (!span) {
+      const html = templates.message({ id, role, avatar, text: '', time });
+      container.insertAdjacentHTML('beforeend', html);
+      span = container.querySelector(`[data-content="${id}"]`);
+    }
+    if (!span) return;
+    span.textContent += textChunk;
+    scrollToBottom();
+  }
+
+  // ✅ Reemplazar mensaje completo
+  function setMessage({id, role, text, avatar, time}: Messages) {
+    let span = container.querySelector(`[data-content="${id}"]`);
+    if (!span) return upsertMessage({id, role, text, avatar, time});
+    span.textContent = text;
+    scrollToBottom();
+  }
+
+  // ✅ Limpiar historial
+  function clearHistory() {
+    container.innerHTML = '';
+  }
+
+  // ✅ Exponer API global
+  //window.ChatHistory = { upsertMessage, setMessage, clearHistory };
+</script>

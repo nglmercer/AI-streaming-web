@@ -1,0 +1,47 @@
+---
+import {
+    btn_success,
+    btn_warning,
+    btn_danger
+} from '../assets/classconst';
+---
+
+<!-- Toda la estructura HTML va aquí -->
+<div id="app-container" class="relative h-full max-h-[700px] border-2 border-gray-600 rounded-lg shadow-lg bg-gray-700 m-2">
+    <canvas id="canvas" class="h-full block"></canvas>
+
+    <div class="absolute top-4 left-4 bg-gray-900 bg-opacity-70 p-4 rounded-lg shadow-xl space-y-3">
+        <h2 class="text-lg font-bold border-b border-gray-500 pb-2 mb-2">Controles</h2>
+        
+        <div>
+            <p class="font-semibold mb-2">Cambiar Modelo:</p>
+            <div class="flex space-x-2">
+                <button id="btn-shizuku" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Shizuku (v2)</button>
+                <button id="btn-haru" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Haru (v4)</button>
+            </div>
+        </div>
+        
+        <div>
+            <p class="font-semibold mb-2">Probar Reacciones:</p>
+            <div class="flex space-x-2">
+                <button id="btn-expression" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Expresión</button>
+                <button id="btn-motion" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Movimiento</button>
+            </div>
+        </div>
+        <p id="loading-text" class="text-yellow-400 font-bold hidden">Cargando modelo...</p>
+    </div>
+    <div class={btn_success + " absolute top-4 right-4"} id="ws_status">
+      Connected
+    </div>
+</div>
+
+
+<!-- 
+    ====== ESTA LÍNEA ES LA SOLUCIÓN DEFINITIVA ======
+    Asegúrate de que la ruta 'src' sea correcta.
+    Apunta desde 'components' hacia 'scripts'.
+-->
+<script>
+  import './live2d-handler.ts';
+  
+</script>
