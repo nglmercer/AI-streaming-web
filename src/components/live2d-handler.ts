@@ -30,13 +30,8 @@ const loadingText = document.getElementById('loading-text') as HTMLParagraphElem
 const app = new PIXI.Application({  
     view: canvas,  
     autoStart: true,  
-    resizeTo: canvas.parentElement!,  
     backgroundColor: 0x000000,  
-    backgroundAlpha: 0.5,  
-    antialias: true,  
-    powerPreference: "high-performance", // Mejor rendimiento  
     resolution: window.devicePixelRatio || 1, // Soporte para pantallas de alta densidad  
-    autoDensity: true  
 });
 
 async function setTiledBackground(src: string) {
@@ -51,7 +46,7 @@ async function loadModel(url: string) {
     loadingText.classList.remove('hidden');  
   
     if (currentModel) {  
-        app.stage.removeChild(currentModel);  
+        app.stage.removeChild(currentModel as any);  
         currentModel.destroy({ children: true, texture: true, baseTexture: true });  
     }  
   
@@ -61,12 +56,12 @@ async function loadModel(url: string) {
             autoHitTest: true,  
             autoFocus: false,  
             autoUpdate: true,  
-            ticker: app.ticker,  
+            ticker: app.ticker as any,
             motionPreload: MotionPreloadStrategy.IDLE,  
             // idleMotionGroupName: 'idle' // opcional, si tu modelo lo soporta  
         });  
           
-        app.stage.addChild(currentModel);  
+        app.stage.addChild(currentModel as any);  
   
         const scale = Math.min(  
             (app.view.width * 0.8) / currentModel.width,  
@@ -76,7 +71,7 @@ async function loadModel(url: string) {
         currentModel.x = (app.view.width - currentModel.width) / 2;  
         currentModel.y = (app.view.height - currentModel.height) / 2;  
           
-        currentModel.interactive = true;  
+        currentModel.eventMode = 'auto';  
         currentModel.on('hit', () => triggerRandomMotion());  
   
     } catch (error) {  
@@ -116,30 +111,47 @@ function triggerRandomExpression() {
     expressionManager.setExpression(randomExpression);  
 }  
 
-function triggerRandomMotion() {  
+function triggerRandomMotion(expression:string | any='tap_body') {  
     if (!currentModel) return;  
       
     // Usar prioridades para mejor control de animaciones  
     const priority = MotionPriority.NORMAL;  
-    currentModel.motion('tap_body', undefined, priority);  
+    currentModel.motion(expression, undefined, priority);  
 }
-async function speakWithLipSync(audioUrl: string, text?: string) {  
-    if (!currentModel) return;  
-      
-    try {  
-        // El módulo lipsync permite usar la función speak  
-        await currentModel.speak(audioUrl, {  
-            onFinish: () => {  
-                console.log("Audio terminado");  
-            },  
-            onError: (error) => {  
-                console.error("Error en audio:", error);  
-            }  
-        });  
-    } catch (error) {  
-        console.error("Error en lip sync:", error);  
-    }  
-}  
+/**
+ * Reproduce un audio con lip-sync y notifica su estado a través de callbacks.
+ * @param audioUrl La URL del audio a reproducir.
+ * @param onFinish Callback que se ejecuta cuando el audio termina.
+ * @param onError Callback que se ejecuta si hay un error.
+ */
+async function speakWithLipSync(audioUrl: string, onFinish: () => void, onError: (e: any) => void) {
+    if (!currentModel) {
+        console.error("No hay un modelo Live2D cargado para hablar.");
+        onError(new Error("No Live2D model loaded."));
+        return;
+    }
+
+    try {
+        // La biblioteca de lipsync ya proporciona callbacks
+        await currentModel.speak(audioUrl, {
+            onFinish, // Pasamos el callback directamente
+            onError,  // Pasamos el callback directamente
+        });
+    } catch (error) {
+        console.error("Error al iniciar el lip sync:", error);
+        onError(error);
+    }
+}
+
+/**
+ * Detiene cualquier audio que se esté reproduciendo a través del lip-sync.
+ */
+function stopLipSyncAudio() {
+    if (currentModel) {
+        // La biblioteca tiene su propio método para detener el habla
+        currentModel.stopSpeaking();
+    }
+}
 // --- Asignar eventos y carga inicial ---
 btnShizuku.onclick = () => loadModel(shizuku_JSON);
 btnHaru.onclick = () => loadModel(cubism4Model);
@@ -148,3 +160,9 @@ btnMotion.onclick = triggerRandomMotion;
 
 loadModel(cubism2Model); // Cargar el modelo inicial
 setTiledBackground('/bg/ceiling-window-room-night.jpeg');
+export {
+    speakWithLipSync,
+    getAvailableExpressions,
+    triggerRandomExpression,
+    stopLipSyncAudio
+}

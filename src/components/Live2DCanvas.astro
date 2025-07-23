@@ -46,6 +46,23 @@ import {
 import { WsConnectionManager } from '../lib/WsConnectionManager';
 import type { ConnectionState, Message } from '../lib/types';
 import { emitter } from '../lib/Emitter';
+import { type ProvidersMap,AudioQueue } from '../lib/audio/audio_queue';
+import { WebSocketAudioProvider } from '../lib/audio/providers';
+import { speakWithLipSync, stopLipSyncAudio } from './live2d-handler'; 
+import type { MessageEvent } from './types/ws_model'
+const wsAudioProvider = new WebSocketAudioProvider();
+
+// 2. Crear el mapa de proveedores para AudioQueue
+const providers: ProvidersMap = {
+  // Puedes tener otros proveedores aquí, como StreamElements, etc.
+  // 'streamElements': { instance: new StreamElementsProvider(), initialized: false },
+  
+  // Añade tu nuevo proveedor con un nombre único
+  'websocketAudio': { instance: wsAudioProvider, initialized: true }
+};
+
+// 3. Crear la instancia de AudioQueue
+const audioQueue = new AudioQueue(providers, { mode: 'archive' });
 // 1. new Class
 const wsManager = new WsConnectionManager();
 const template = (text: string, type: string = 'text-input'): {
@@ -88,9 +105,21 @@ const onMessages = (data: Message) => {
   if (!data || !data.data) return;
   console.log("onMessages",data)
   console.log("data.type",data.data)
-  const {type} = data.data;
+  const messageData = data.data;
+  const {type} = messageData as MessageEvent;
   if (type === 'audio') {
-    playActionAudio(data.data);
+      audioQueue.enqueue(
+      messageData.audio,         // El string base64 va aquí
+      'websocketAudio',          // El nombre de nuestro nuevo provider
+      {                          // Opciones adicionales que podrías usar en el futuro
+        messageData
+      },
+      false // Opcional: `true` para interrumpir y reproducir ya, `false` para encolar.
+    ).then(audioId => {
+      console.log(`Audio con ID ${audioId} ha sido encolado/reproducido.`);
+    }).catch(error => {
+      console.error("Error al encolar el audio desde WebSocket:", error);
+    });
   }
 }
 wsManager.createConnection({
@@ -108,34 +137,7 @@ emitter.on('send:text-input', (data: string) => {
   if (!ws_api) return;
   ws_api.send(templateData);
 })
-type DisplayText = {
-  text: string;
-  name: string;
-  avatar: string;
-};
 
-type ActionAudio = {
-  type: 'audio';
-  audio: string;          // base64
-  display_text: DisplayText;
-  forwarded: boolean;
-  slice_length: number;
-  volumes: number[];
-};
-function base64ToBlob(b64: string): Blob {
-  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-  return new Blob([bytes], { type: 'audio/wav' });
-}
-function playActionAudio(action: ActionAudio): void {
-  const blob = base64ToBlob(action.audio);
-  const url  = URL.createObjectURL(blob);
-  const audioEl = new Audio(url);
-  console.log("process audio",audioEl);
-
-  audioEl.play()
-         .then(() => console.log('Reproduciendo…'))
-         .catch(e  => console.error('Error al reproducir:', e));
-}
 //console.log("ws_api",ws_api)
 
 
@@ -155,7 +157,7 @@ wsManager.connect('echo-2');
 */
 async function initializeConnection(){
     const button_connect = document.getElementById('ws_status');
-    ws_api?.connect();//non return
+    //ws_api?.connect();//non return
     if (!button_connect) return;
     button_connect.addEventListener('click', () => {
         ws_api?.connect();
