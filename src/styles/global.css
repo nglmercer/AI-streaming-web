@@ -21,3 +21,12 @@ html {
 .control-button {
     @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed;
 }
+.btn {
+    @apply w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition-colors;
+}
+.btn-yellow {
+    @apply w-full bg-yellow-500 text-black font-semibold py-2 px-4 rounded-lg shadow hover:bg-yellow-600 transition-colors;
+}
+.btn-gray {
+    @apply w-full bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-600 transition-colors;
+}

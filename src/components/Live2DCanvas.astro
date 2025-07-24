@@ -5,6 +5,7 @@ import {
     btn_danger,
     btn_Info
 } from '../assets/classconst';
+import Subtitles from './Subtitles.astro';
 ---
 
 <!-- Toda la estructura HTML va aquí -->
@@ -30,6 +31,9 @@ import {
             </div>
         </div>
         <p id="loading-text" class="text-yellow-400 font-bold hidden">Cargando modelo...</p>
+    </div>
+    <div class="absolute top-0 right-0 left-0 bottom-0">
+      <Subtitles client:load />
     </div>
     <div class={btn_Info + " absolute top-4 right-4"} id="ws_status">
       Connect?
@@ -60,7 +64,7 @@ const providers: ProvidersMap = {
   // Añade tu nuevo proveedor con un nombre único
   'websocketAudio': { instance: wsAudioProvider, initialized: true }
 };
-
+//emitter.emit('subtitles:show', { text: '¡Hola! Este es un <b>subtítulo</b> permanente.' });
 // 3. Crear la instancia de AudioQueue
 const audioQueue = new AudioQueue(providers, { mode: 'archive' });
 // 1. new Class
@@ -121,6 +125,12 @@ const onMessages = (data: Message) => {
       console.error("Error al encolar el audio desde WebSocket:", error);
     });
   }
+  if (type === 'text-input' || type === 'full-text') {
+    emitSubtittles(messageData.text)
+  }
+}
+function emitSubtittles(text: string) {
+    emitter.emit('subtitles:show', { text: text });
 }
 wsManager.createConnection({
   id: 'ws_api',

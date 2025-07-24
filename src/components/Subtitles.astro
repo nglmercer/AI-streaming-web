@@ -1,0 +1,157 @@
+---
+// src/components/Subtitles.astro
+// Este componente no necesita props, ya que será controlado por eventos globales.
+---
+<!-- 
+  El contenedor principal del subtítulo.
+  - 'absolute': para posicionarlo sobre otro elemento (ej. un video).
+  - 'bottom-10 left-1/2 -translate-x-1/2': lo centra horizontalmente en la parte inferior.
+  - 'z-50': para asegurar que esté por encima de otros elementos.
+  - 'hidden': para que esté oculto por defecto.
+  - El resto son clases de Tailwind para el estilo visual.
+-->
+<div id="subtitle-container" class="absolute bottom-10 left-1/2 -translate-x-1/2 w-max max-w-[90%] p-3 bg-black bg-opacity-70 text-white text-center text-lg rounded-lg shadow-lg transition-all duration-300 ease-in-out z-50 hidden">
+    <p id="subtitle-text" class="m-0"></p>
+</div>
+
+<script>
+    import { emitter } from '../lib/Emitter';
+
+    const container = document.getElementById('subtitle-container') as HTMLDivElement;
+    const textElement = document.getElementById('subtitle-text') as HTMLParagraphElement;
+    
+    // --- Estado del componente ---
+    let hideTimeout: number | undefined;
+    let subtitleQueue: Array<{ text: string; duration: number; allowHtml?: boolean }> = [];
+    let isProcessingQueue = false;
+
+    // --- Lógica de procesamiento de la cola ---
+
+    /**
+     * Procesa el siguiente subtítulo en la cola.
+     * Se llama a sí misma recursivamente con un setTimeout hasta que la cola esté vacía.
+     */
+    function processNextInQueue() {
+        // Si la cola está vacía o se ha detenido el procesamiento, termina.
+        if (subtitleQueue.length === 0 || !isProcessingQueue) {
+            isProcessingQueue = false;
+            emitter.emit('subtitles:hide'); // Oculta al final de la cola
+            return;
+        }
+
+        const nextSubtitle = subtitleQueue.shift(); // Saca el primer elemento
+        if (nextSubtitle) {
+            // Usa el evento 'show' para mostrar el subtítulo actual
+            emitter.emit('subtitles:show', nextSubtitle);
+            // Programa la llamada para el siguiente subtítulo
+            setTimeout(processNextInQueue, nextSubtitle.duration);
+        }
+    }
+
+    // --- Definición de los listeners para cada evento ---
+
+    /**
+     * Muestra un subtítulo. Detiene y limpia cualquier cola existente.
+     * @param data - Un objeto que puede contener:
+     *   - text: (Requerido) El texto del subtítulo.
+     *   - duration: (Opcional) Milisegundos para ocultar el subtítulo automáticamente.
+     *   - allowHtml: (Opcional, default: false) Si es true, renderiza el texto como HTML. ¡ÚSALO CON PRECAUCIÓN!
+     */
+    emitter.on('subtitles:show', (data: { text: string; duration?: number; allowHtml?: boolean }) => {
+        if (!container || !textElement || !data.text) return;
+
+        // Si se muestra un subtítulo individual, detenemos y limpiamos la cola.
+        isProcessingQueue = false;
+        subtitleQueue = [];
+        if (hideTimeout) clearTimeout(hideTimeout);
+
+        // --- MEJORA DE SEGURIDAD ---
+        // Por defecto, usamos textContent para prevenir inyección de HTML (XSS).
+        // Solo si 'allowHtml' es explícitamente true, usamos innerHTML.
+        if (data.allowHtml === true) {
+            textElement.innerHTML = data.text; // Permite etiquetas como <b>, <i>, etc.
+        } else {
+            textElement.textContent = data.text; // Opción segura por defecto.
+        }
+        
+        container.classList.remove('hidden');
+
+        if (data.duration && !isProcessingQueue) {
+            hideTimeout = window.setTimeout(() => {
+                emitter.emit('subtitles:hide');
+            }, data.duration);
+        }
+    });
+
+    /**
+     * Añade una secuencia de subtítulos a una cola para mostrarlos uno tras otro.
+     * @param chunks - Un array de objetos, cada uno con { text, duration, allowHtml? }.
+     */
+    emitter.on('subtitles:queue', (chunks: Array<{ text: string; duration: number; allowHtml?: boolean }>) => {
+        if (!chunks || chunks.length === 0) return;
+
+        // Añade los nuevos chunks a la cola
+        subtitleQueue.push(...chunks);
+        
+        // Si no se está procesando ya una cola, inicia el proceso.
+        if (!isProcessingQueue) {
+            isProcessingQueue = true;
+            processNextInQueue();
+        }
+    });
+    
+    /**
+     * Oculta el subtítulo actual. Detiene cualquier cola en proceso.
+     */
+    emitter.on('subtitles:hide', () => {
+        if (!container) return;
+        
+        isProcessingQueue = false; // Detiene el procesamiento de la cola si se oculta manualmente
+        if (hideTimeout) clearTimeout(hideTimeout);
+        
+        container.classList.add('hidden');
+    });
+
+    /**
+     * NUEVA UTILIDAD: Detiene la cola, limpia el texto y oculta el contenedor.
+     */
+    emitter.on('subtitles:clear', () => {
+        isProcessingQueue = false;
+        subtitleQueue = [];
+        if (textElement) textElement.textContent = '';
+        emitter.emit('subtitles:hide');
+    });
+
+
+    /**
+     * Mueve el contenedor de subtítulos.
+     * @param position - Objeto con propiedades CSS de posicionamiento.
+     */
+    emitter.on('subtitles:move', (position: Partial<CSSStyleDeclaration>) => {
+        if (!container) return;
+        container.style.top = 'auto';
+        container.style.bottom = 'auto';
+        container.style.left = 'auto';
+        container.style.right = 'auto';
+        container.style.transform = '';
+        Object.assign(container.style, position);
+    });
+
+    /**
+     * Personaliza el estilo de los subtítulos.
+     * @param options - Objeto con propiedades CSS.
+     */
+    emitter.on('subtitles:configure', (options: Partial<CSSStyleDeclaration>) => {
+        if (!container || !textElement) return;
+        Object.assign(container.style, {
+            backgroundColor: options.backgroundColor,
+            borderRadius: options.borderRadius,
+            padding: options.padding,
+        });
+        Object.assign(textElement.style, {
+            color: options.color,
+            fontSize: options.fontSize,
+            fontWeight: options.fontWeight,
+        });
+    });
+</script>

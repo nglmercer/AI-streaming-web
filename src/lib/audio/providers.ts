@@ -1,4 +1,4 @@
-import { Emitter } from '../Emitter';
+import { Emitter,emitter } from '../Emitter';
 import { speakWithLipSync, stopLipSyncAudio, triggerRandomExpression, triggerRandomMotion } from '../../components/live2d-handler'; 
 import type { audioEvent } from '../../components/types/ws_model'
 
@@ -119,9 +119,7 @@ export class WebSocketAudioProvider extends TTSProvider {
    * @param opts - Opciones adicionales.
    * @returns Una promesa que se resuelve cuando el audio termina.
    */
-  async speak(audioBase64: string, opts: audioEvent ={
-    type:'audio'
-  }): Promise<void> {
+  async speak(audioBase64: string, opts:any): Promise<void> {
     return new Promise((resolve, reject) => {
       // Detenemos cualquier audio anterior que este proveedor estuviera reproduciendo.
       this.stop(); 
@@ -138,10 +136,12 @@ export class WebSocketAudioProvider extends TTSProvider {
         // --- ÚNICO PUNTO DE REPRODUCCIÓN ---
         // Delegamos la reproducción y el manejo de eventos a speakWithLipSync.
         // Ya no creamos nuestro propio new Audio().
-
+        const messageData = opts.messageData as  audioEvent;
         this.emitter.emit('audio:play', { provider: this.constructor.name });
-        if (opts && opts.actions && opts.actions.expressions){
-          triggerRandomExpression(opts.actions.expressions?.[0])
+        emitter.emit('subtitles:show',{text:messageData.display_text?.text});
+        console.log("opts",messageData)
+        if (messageData && messageData.actions && messageData.actions.expressions){
+          triggerRandomExpression(messageData.actions.expressions?.[0])
         }
         speakWithLipSync(
           url,
