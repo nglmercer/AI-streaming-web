@@ -77,7 +77,7 @@ export interface fulltextEvent extends BaseEvent {
 export interface controlEvent extends BaseEvent {
     text: string;
 }
-export interface senInputEvent extends BaseEvent {
+export interface sendInputEvent extends BaseEvent {
     text: string;
     images?: string[] | any[]
 }

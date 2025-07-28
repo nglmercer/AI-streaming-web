@@ -33,7 +33,7 @@ import Subtitles from './Subtitles.astro';
         <p id="loading-text" class="text-yellow-400 font-bold hidden">Cargando modelo...</p>
     </div>
     <div class="absolute top-0 right-0 left-0 bottom-0">
-      <Subtitles client:load />
+      <Subtitles />
     </div>
     <div class={btn_Info + " absolute top-4 right-4"} id="ws_status">
       Connect?
@@ -53,7 +53,6 @@ import type { ConnectionState, Message } from '../lib/types';
 import { emitter } from '../lib/Emitter';
 import { type ProvidersMap,AudioQueue } from '../lib/audio/audio_queue';
 import { WebSocketAudioProvider } from '../lib/audio/providers';
-import { speakWithLipSync, stopLipSyncAudio } from './live2d-handler'; 
 import type { MessageEvent } from './types/ws_model'
 const wsAudioProvider = new WebSocketAudioProvider();
 // 2. Crear el mapa de proveedores para AudioQueue
@@ -167,7 +166,7 @@ wsManager.connect('echo-2');
 */
 async function initializeConnection(){
     const button_connect = document.getElementById('ws_status');
-    //ws_api?.connect();//non return
+    ws_api?.connect();//non return
     if (!button_connect) return;
     button_connect.addEventListener('click', () => {
         ws_api?.connect();
