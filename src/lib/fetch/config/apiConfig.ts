@@ -29,7 +29,7 @@ const windowurl: string = typeof window !== "undefined" ? window.location.origin
 // src/config/apiConfig.ts
 const apiConfig: ApiConfig = {
   host: import.meta.env.VITE_API_HOST || '127.0.0.1',
-  port: import.meta.env.VITE_API_PORT || 3000,
+  port: import.meta.env.VITE_API_PORT || 12393,
   protocol: 'http',
   getFullUrl(): string {
     return `${this.protocol}://${this.host}:${this.port}`;

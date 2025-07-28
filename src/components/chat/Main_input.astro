@@ -69,7 +69,9 @@ micButton.addEventListener("click", () => {
 emitter.on("vad:start", () => console.log("Turno de voz iniciado"));
 emitter.on("vad:end", async (data:{ buffer: Float32Array, timestamp: number }) => {
   console.log("Turno de voz finalizado, buffer listo para IA", data);
-  const result = await transcriptApi.transcribe({ type: "float32array", data: data.buffer }).then((res) => console.log(res));
-  console.log("result", result);
+  await transcriptApi.transcribe({ type: "float32array", data: data.buffer }).then((res) => {
+    console.log("res",res);
+    emitter.emit('send:text-input', res.transcript);
+  });
 });
 </script>

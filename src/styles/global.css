@@ -13,9 +13,8 @@ html {
 }
 
 #canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
+    display: flex;
+    justify-content: center;
 }
 /* Estilos base para los botones usando @apply de Tailwind para consistencia */
 .control-button {
