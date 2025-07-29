@@ -138,7 +138,7 @@ export class WebSocketAudioProvider extends TTSProvider {
         // Ya no creamos nuestro propio new Audio().
         const messageData = opts.messageData as  audioEvent;
         this.emitter.emit('audio:play', { provider: this.constructor.name });
-        emitter.emit('subtitles:show',{text:messageData.display_text?.text});
+        emitter.emit('subtitles:show',{text:messageData.display_text?.text || messageData.text});
         console.log("opts",messageData)
         if (messageData && messageData.actions && messageData.actions.expressions){
           triggerRandomExpression(messageData.actions.expressions?.[0])

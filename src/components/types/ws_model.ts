@@ -67,6 +67,7 @@ export interface audioEvent extends BaseEvent {
   audio?: string;
   actions?: Actions;
   display_text?: DisplayText;
+  text?: string;
   forwarded?: boolean;
   slice_length?: number;
   volumes?: number[];
