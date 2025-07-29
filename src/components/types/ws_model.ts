@@ -82,3 +82,9 @@ export interface sendInputEvent extends BaseEvent {
     text: string;
     images?: string[] | any[]
 }
+export interface RemovedValue {
+    value: string;
+    position: number;
+    cleanValue: string;
+    type?: 'expression' | 'motion';
+}

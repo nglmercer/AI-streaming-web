@@ -33,7 +33,7 @@ import Subtitles from './Subtitles.astro';
         <p id="loading-text" class="text-yellow-400 font-bold hidden">Cargando modelo...</p>
     </div>
     <div class="absolute top-0 right-0 left-0 bottom-0 pointer-events-none">
-      <Subtitles client:visible/>
+      <Subtitles  />
     </div>
     <div class={btn_Info + " absolute top-4 right-4"} id="ws_status">
       Connect?
@@ -53,7 +53,8 @@ import type { ConnectionState, Message } from '../lib/types';
 import { emitter } from '../lib/Emitter';
 import { type ProvidersMap,AudioQueue } from '../lib/audio/audio_queue';
 import { WebSocketAudioProvider } from '../lib/audio/providers';
-import type { MessageEvent } from './types/ws_model'
+import type { MessageEvent,RemovedValue } from './types/ws_model';
+import { triggerRandomExpression, triggerRandomMotion } from './live2d-handler.ts';
 const wsAudioProvider = new WebSocketAudioProvider();
 // 2. Crear el mapa de proveedores para AudioQueue
 const providers: ProvidersMap = {
@@ -106,18 +107,19 @@ const onConnect = (data: any) => {
 }
 const onMessages = (data: Message) => {
   if (!data || !data.data) return;
-  console.log("onMessages",data)
-  console.log("data.type",data.data)
+  console.log("data.data",data.data)
   const messageData = data.data;
   const {type} = messageData as MessageEvent;
   if (type === 'audio') {
+    if (!messageData.audio) return;
+      ModelActions(messageData.payload)
       audioQueue.enqueue(
-      messageData.audio,         // El string base64 va aquí
-      'websocketAudio',          // El nombre de nuestro nuevo provider
-      {                          // Opciones adicionales que podrías usar en el futuro
+      messageData.audio,         //base64
+      'websocketAudio',         
+      {                      
         messageData
       },
-      false // Opcional: `true` para interrumpir y reproducir ya, `false` para encolar.
+      false // `false` para encolar.
     ).then(audioId => {
       console.log(`Audio con ID ${audioId} ha sido encolado/reproducido.`);
     }).catch(error => {
@@ -126,6 +128,18 @@ const onMessages = (data: Message) => {
   }
   if (type === 'text-input' || type === 'full-text') {
     emitSubtittles(messageData.text)
+  }
+}
+function ModelActions(actions:RemovedValue[]){
+  if (actions && actions.length > 0) {
+    console.log("actions",actions)
+    actions.forEach((action) => {
+      if (action.type === 'expression') {
+        triggerRandomExpression(action.cleanValue);
+      } else if (action.type === 'motion') {
+        triggerRandomMotion(action.cleanValue);
+      }
+    });
   }
 }
 function emitSubtittles(text: string) {

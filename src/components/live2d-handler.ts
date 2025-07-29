@@ -26,18 +26,22 @@ const btnExpression = document.getElementById('btn-expression') as HTMLButtonEle
 const btnMotion = document.getElementById('btn-motion') as HTMLButtonElement;
 const loadingText = document.getElementById('loading-text') as HTMLParagraphElement;
 
-// Crear la aplicación Pixi
+// @ts-ignore
 const app = new PIXI.Application({  
     view: canvas,  
     autoStart: true,  
     backgroundColor: 0x000000,  
-    resolution: window.devicePixelRatio || 1, // Soporte para pantallas de alta densidad  
+    resolution: window.devicePixelRatio || 1,
+    autoResize: true,
+    backgroundAlpha: 0
 });
 
 async function setTiledBackground(src: string) {
     if (!canvas) return;
     canvas.style.backgroundImage = `url(${src})`;
     canvas.style.backgroundSize = 'cover';
+    
+    console.log("setTiledBackground",src,canvas);
 }
 // --- Funciones (sin cambios) ---
 
@@ -95,28 +99,45 @@ function getAvailableExpressions(): string[] {
     const expressionManager = currentModel.internalModel.motionManager.expressionManager;  
     return expressionManager?.definitions.map(d => d.name) || [];  
 }
-function triggerRandomExpression(expression:string |number |any) {  
+function triggerRandomExpression(expression?:string |number ) {  
     if (!currentModel) return;  
-      
+    
     // Usar el expressionManager del módulo lipsync  
     const expressionManager = currentModel.internalModel.motionManager.expressionManager;  
     if (!expressionManager) return;  
-      
+    
     const expressions = expressionManager.definitions;  
     if (!expressions || expressions.length === 0) return;  
-      
+    
     const randomIndex = Math.floor(Math.random() * expressions.length);  
     const randomExpression = expressions[randomIndex].name;  
+    console.log("triggerRandomExpression",expression || randomExpression)
       
     expressionManager.setExpression(expression || randomExpression);  
 }  
 
-function triggerRandomMotion(expression:string | any='tap_body') {  
-    if (!currentModel) return;  
-      
-    // Usar prioridades para mejor control de animaciones  
-    const priority = MotionPriority.NORMAL;  
-    currentModel.motion(expression, undefined, priority);  
+function triggerRandomMotion(groupName?: string): void {
+    if (!currentModel) {
+        console.error("Current model is not defined");
+        return;
+    }
+    
+    const priority = MotionPriority.NORMAL;
+    const motionManager = currentModel.internalModel.motionManager;
+    
+    if (!motionManager.motionGroups) return;
+    console.log("triggerRandomMotion", motionManager.motionGroups);
+
+    const motions = Object.keys(motionManager.motionGroups);
+    if (motions.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * motions.length);
+    const randomMotion = motions[randomIndex];
+
+    console.log("Selected random motion:", randomMotion);
+
+    // Reproducir el movimiento seleccionado
+    currentModel.motion(groupName || randomMotion, undefined, priority);
 }
 /**
  * Reproduce un audio con lip-sync y notifica su estado a través de callbacks.
@@ -155,11 +176,12 @@ function stopLipSyncAudio() {
 // --- Asignar eventos y carga inicial ---
 btnShizuku.onclick = () => loadModel(shizuku_JSON);
 btnHaru.onclick = () => loadModel(cubism4Model);
-btnExpression.onclick = triggerRandomExpression;
-btnMotion.onclick = triggerRandomMotion;
+btnExpression.onclick = ()=>{triggerRandomExpression()}
+btnMotion.onclick = ()=>{triggerRandomMotion()}
 
-loadModel(cubism2Model); // Cargar el modelo inicial
 setTiledBackground('/bg/ceiling-window-room-night.jpeg');
+setTimeout(() => setTiledBackground('/bg/ceiling-window-room-night.jpeg'), 1000);
+loadModel(cubism2Model); // Cargar el modelo inicial
 export {
     speakWithLipSync,
     getAvailableExpressions,

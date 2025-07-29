@@ -15,6 +15,7 @@ html {
 #canvas {
     display: flex;
     justify-content: center;
+    background-color: transparent;
 }
 /* Estilos base para los botones usando @apply de Tailwind para consistencia */
 .control-button {
