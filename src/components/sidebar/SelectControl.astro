@@ -1,0 +1,23 @@
+---
+// src/components/SelectControl.astro
+import FormField from './FormField.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  label: string;
+  placeholder: string;
+  options: { value: string; label: string }[];
+}
+const { label, placeholder, options } = Astro.props;
+---
+<FormField {label}>
+  <div class="relative">
+    <select class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+      {options.map(opt => <option value={opt.value}>{opt.label}</option>)}
+    </select>
+    <div class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white flex items-center justify-between pointer-events-none">
+      <span>{placeholder}</span>
+      <Icon name="expand_more" />
+    </div>
+  </div>
+</FormField>

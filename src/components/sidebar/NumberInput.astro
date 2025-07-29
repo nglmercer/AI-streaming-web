@@ -1,0 +1,28 @@
+---
+// src/components/NumberInput.astro
+import FormField from './FormField.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  label: string;
+  value: number;
+}
+const { label, value } = Astro.props;
+---
+<FormField {label} class="flex-row items-center justify-between py-2">
+  <div class="relative flex items-center">
+    <input
+      type="number"
+      value={value}
+      class="bg-gray-700 border border-gray-600 rounded-md py-1.5 pl-3 pr-8 text-white w-28 text-right"
+    />
+    <div class="absolute right-1 flex flex-col">
+      <button class="text-gray-400 hover:text-white h-4 flex items-center">
+        <Icon name="expand_less" size="sm" />
+      </button>
+      <button class="text-gray-400 hover:text-white h-4 flex items-center">
+        <Icon name="expand_more" size="sm" />
+      </button>
+    </div>
+  </div>
+</FormField>

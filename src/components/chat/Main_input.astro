@@ -1,5 +1,5 @@
 ---
-import { btn_Info } from '../../assets/classconst'
+import { btn_Info,info_lalbel } from '../../assets/classconst'
 export interface Props {
   label?: string;
 }
@@ -8,37 +8,33 @@ const defaultBtn = "p-2 rounded-full text-slate-700 dark:text-slate-200 hover:bg
 ---
 
 <!-- src/components/ActionBar.astro -->
-<div class="flex flex-col gap-2 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 w-full">
-  <!-- label -->
-  <div class="flex items-center">
-    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400" id="status-label">{label}</span>
-  </div>
+<div class="grid grid-cols-[100px_minmax(900px,_1fr)] gap-2 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 w-full">
+  <div class="grid grid-cols-[1fr_auto] items-center gap-2">
+    <div class={info_lalbel}>
+      <span class="text-xs font-semibold text-slate-500 dark:text-slate-400" id="status-label">{label}</span>
+    </div>
 
-  <!-- top buttons -->
-  <div class="flex items-center gap-2">
     <button
-      id="mic-toggle"
-      aria-label="Start"
-      class={defaultBtn}
-    >
-      <span class="material-symbols-outlined text-lg" id="mic-icon">mic_off</span>
-    </button>
-    <button
-      aria-label="Raise hand"
-      class={defaultBtn}
-    >
-      <span class="material-symbols-outlined text-xl">back_hand</span>
-    </button>
-  </div>
-
-  <!-- file + Input row -->
-  <form class="flex items-center gap-2" id="chat-form">
-    <button
-      aria-label="Attach file"
-      class={defaultBtn}
-    >
-      <span class="material-symbols-outlined text-xl">attach_file</span>
-    </button>
+    id="mic-toggle"
+    aria-label="Start"
+    class={defaultBtn}
+  >
+  <span class="material-symbols-outlined text-lg" id="mic-icon">mic_off</span>
+  </button>
+  <button
+    aria-label="Raise hand"
+    class={defaultBtn}
+  >
+    <span class="material-symbols-outlined text-xl">back_hand</span>
+  </button>
+  <button
+    aria-label="Attach file"
+    class={defaultBtn}
+  >
+    <span class="material-symbols-outlined text-xl">attach_file</span>
+  </button>
+</div>
+  <form class="flex items-center gap-2 w-full" id="chat-form">
     <input
       type="text"
       placeholder="Type your message..."

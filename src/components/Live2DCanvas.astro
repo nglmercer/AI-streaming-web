@@ -6,14 +6,13 @@ import {
     btn_Info
 } from '../assets/classconst';
 import Subtitles from './Subtitles.astro';
+import DraggableDialog from './dialog/DraggableDialog.astro';
 ---
 
 <!-- Toda la estructura HTML va aquí -->
-<div id="app-container" class="flex justify-center relative h-full max-h-[700px] border-2 border-gray-600 rounded-lg shadow-lg bg-gray-700 m-2">
+<div id="app-container" class="flex justify-center relative h-full border-2 border-gray-600 rounded-lg shadow-lg bg-gray-700 m-2">
     <canvas id="canvas" class="h-full block aspect-auto"></canvas>
-
-    <div class="absolute top-4 left-4 bg-gray-900 bg-opacity-70 p-4 rounded-lg shadow-xl space-y-3">
-        <h2 class="text-lg font-bold border-b border-gray-500 pb-2 mb-2">Controles</h2>
+    <DraggableDialog title="Controles">
         
         <div>
             <p class="font-semibold mb-2">Cambiar Modelo:</p>
@@ -31,7 +30,7 @@ import Subtitles from './Subtitles.astro';
             </div>
         </div>
         <p id="loading-text" class="text-yellow-400 font-bold hidden">Cargando modelo...</p>
-    </div>
+    </DraggableDialog>
     <div class="absolute top-0 right-0 left-0 bottom-0 pointer-events-none">
       <Subtitles  />
     </div>

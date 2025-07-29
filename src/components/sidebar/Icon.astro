@@ -1,0 +1,20 @@
+---
+// src/components/Icon.astro
+interface Props {
+  name: string;
+  class?: string;
+  size?: 'sm' | 'md' | 'lg';
+  id?: string;
+}
+
+const { name, class: className, size = 'md',id } = Astro.props;
+
+const sizeClasses = {
+  sm: 'text-base',
+  md: 'text-xl',
+  lg: 'text-2xl'
+};
+---
+<span class:list={["material-symbols-outlined", sizeClasses[size], className]} id={id}>
+  {name}
+</span>

@@ -1,0 +1,107 @@
+---
+// src/components/DraggableDialog.astro
+
+// Definimos las propiedades que el componente aceptará.
+// title: El título que se mostrará en la cabecera del panel.
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!-- 
+  El contenedor principal del diálogo.
+  - Usamos 'fixed' para que flote sobre el resto del contenido.
+  - 'z-50' para asegurar que esté por encima de la mayoría de los elementos.
+  - 'select-none' para evitar que el texto se seleccione mientras se arrastra.
+  - Usamos un data-attribute para identificarlo fácilmente en el script.
+-->
+<div
+  data-dialog-container
+  class="fixed top-8 left-8 z-50 select-none hidden"
+>
+  <div class="bg-gray-900 bg-opacity-80 backdrop-blur-sm text-white p-4 rounded-lg shadow-xl w-max space-y-3 border border-gray-700">
+    
+    <!-- Cabecera del diálogo -->
+    <div
+      data-dialog-header
+      class="flex justify-between items-center border-b border-gray-600 pb-2 mb-3 cursor-move"
+    >
+      <h2 class="text-lg font-bold">{title}</h2>
+      <button
+        data-close-button
+        title="Cerrar Panel"
+        class="text-gray-400 hover:text-white hover:bg-red-600 rounded-full w-6 h-6 flex items-center justify-center transition-colors duration-200"
+      >
+        ✕ <!-- Este es el carácter de una 'X' (cruz) -->
+      </button>
+    </div>
+
+    <!-- Contenido personalizable -->
+    <!-- Aquí es donde se inyectará el HTML que pongas dentro de las etiquetas del componente -->
+    <div class="content">
+      <slot />
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Obtenemos los elementos del DOM usando data-attributes para no mezclar estilos con funcionalidad.
+  const dialog = document.querySelector('[data-dialog-container]') as HTMLElement;
+  const header = document.querySelector('[data-dialog-header]') as HTMLElement;
+  const closeButton = document.querySelector('[data-close-button]') as HTMLButtonElement;
+
+  // 1. LÓGICA PARA MOSTRAR EL DIÁLOGO SOLO UNA VEZ
+  // Comprobamos en el localStorage si el usuario ya ha cerrado este panel antes.
+  const isClosed = false;
+
+  // Si no está marcado como 'cerrado', lo mostramos.
+    dialog.style.display = 'block';
+
+  // 2. LÓGICA PARA CERRAR Y OCULTAR EL DIÁLOGO
+  closeButton.addEventListener('click', () => {
+    dialog.style.display = 'none';
+    // Guardamos en el localStorage que el panel ha sido cerrado para no mostrarlo la próxima vez.
+  });
+
+
+  // 3. LÓGICA PARA HACER EL DIÁLOGO ARRASTRABLE
+  let isDragging = false;
+  let offsetX:number, offsetY:number;
+
+  // Cuando el usuario presiona el clic en la cabecera
+  header.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    
+    // Calculamos la diferencia entre la posición del ratón y la esquina superior izquierda del diálogo.
+    // Esto evita que el diálogo "salte" a la posición del cursor.
+    offsetX = e.clientX - dialog.getBoundingClientRect().left;
+    offsetY = e.clientY - dialog.getBoundingClientRect().top;
+    
+    // Cambiamos el cursor para indicar que se puede arrastrar.
+    header.style.cursor = 'grabbing';
+    document.body.style.cursor = 'grabbing';
+  });
+
+  // Cuando el usuario mueve el ratón por CUALQUIER PARTE de la página
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    // Calculamos la nueva posición del diálogo.
+    const newX = e.clientX - offsetX;
+    const newY = e.clientY - offsetY;
+    
+    dialog.style.left = `${newX}px`;
+    dialog.style.top = `${newY}px`;
+  });
+
+  // Cuando el usuario suelta el clic del ratón
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    // Restauramos el cursor a su estado normal.
+    header.style.cursor = 'move';
+    document.body.style.cursor = 'default';
+  });
+</script>
