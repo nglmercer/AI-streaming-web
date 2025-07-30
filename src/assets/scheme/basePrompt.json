@@ -1,0 +1,3 @@
+{
+  "template": "Instrucctions:'You are {conf_name}, a {persona_prompt}. Follow these rules: {style_rules}. <think>{think_tag}</think> [expression]',expressions={AllExpressions},motions={AllMotions}"
+}

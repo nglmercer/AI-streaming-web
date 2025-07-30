@@ -3,13 +3,53 @@
 interface Props {
   label: string;
   checked?: boolean;
+  id: string;
 }
-const { label, checked = false } = Astro.props;
+const { label, checked = false, id } = Astro.props;
 ---
 <div class="flex items-center justify-between py-2">
   <span class="text-gray-200">{label}</span>
   <label class="relative inline-flex items-center cursor-pointer">
-    <input type="checkbox" value="" class="sr-only peer" checked={checked} />
+    <input 
+      type="checkbox" 
+      id={id}
+      value="" 
+      class="sr-only peer" 
+      checked={checked} 
+    />
     <div class="w-11 h-6 bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
   </label>
 </div>
+
+<script>
+  import { DataStorage, LocalStorageAdapter } from "json-obj-manager";
+  const ConfigData = new DataStorage<string>(new LocalStorageAdapter('config'));
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const switchInputs = document.querySelectorAll('input[type="checkbox"][id]');
+    const alldata = await ConfigData.getAll();
+    console.log("ConfigData", alldata);
+
+    switchInputs.forEach(input => {
+      const inputElement = input as HTMLInputElement;
+      const id = inputElement.getAttribute('id');
+      if (id) {
+        const storedValue = alldata[id];
+        if (storedValue !== undefined) {
+          // Convertir string a boolean
+          const isChecked = storedValue === 'true';
+          inputElement.checked = isChecked;
+        }
+
+        inputElement.addEventListener('change', (event) => {
+          const target = event.target as HTMLInputElement;
+          console.log("switch", target.checked);
+          if (!target) return;
+          
+          // Guardar como string en storage
+          ConfigData.save(id, target.checked.toString());
+        });
+      }
+    });
+  });
+</script>

@@ -1,0 +1,60 @@
+---
+// src/components/InputText.astro
+import FormField from './FormField.astro';
+interface Props {
+  label: string;
+  value?: string;
+  id: string;
+  placeholder?: string;
+  type?: 'text' | 'email' | 'password' | 'url';
+}
+const { label, value = '', id, placeholder = '', type = 'text' } = Astro.props;
+---
+<FormField {label} class="flex-row items-center justify-between py-2">
+  <div class="relative flex items-center">
+    <input
+      type={type}
+      id={id}
+      value={value}
+      placeholder={placeholder}
+      class="bg-gray-700 border border-gray-600 scheme-light-dark rounded-md py-1.5 px-3 text-white w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    />
+  </div>
+</FormField>
+
+<script>
+  import { DataStorage, LocalStorageAdapter } from "json-obj-manager";
+  const ConfigData = new DataStorage<string>(new LocalStorageAdapter('config'));
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const textInputs = document.querySelectorAll('input[type="text"][id], input[type="email"][id], input[type="password"][id], input[type="url"][id]');
+    const alldata = await ConfigData.getAll();
+    console.log("ConfigData", alldata);
+
+    textInputs.forEach(input => {
+      const inputElement = input as HTMLInputElement;
+      const id = inputElement.getAttribute('id');
+      if (id) {
+        const storedValue = alldata[id];
+        if (storedValue && storedValue.length > 1) {
+        console.log("storedValue", storedValue);
+          inputElement.value = storedValue;
+        }
+
+        inputElement.addEventListener('input', (event) => {
+          const target = event.target as HTMLInputElement;
+          console.log("text input", target.value);
+          if (!target) return;
+          ConfigData.save(id, target.value);
+        });
+
+        // También guardamos en blur para asegurar persistencia
+        inputElement.addEventListener('blur', (event) => {
+          const target = event.target as HTMLInputElement;
+          if (!target) return;
+          ConfigData.save(id, target.value);
+        });
+      }
+    });
+  });
+</script>

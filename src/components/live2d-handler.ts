@@ -1,7 +1,7 @@
 // src/scripts/live2d-handler.ts
 
 import * as PIXI from "pixi.js";
-
+import { defaulConfig } from "@assets/defaultConfig";
 import {   
   Live2DModel,   
   MotionPreloadStrategy,   
@@ -179,8 +179,8 @@ btnHaru.onclick = () => loadModel(cubism4Model);
 btnExpression.onclick = ()=>{triggerRandomExpression()}
 btnMotion.onclick = ()=>{triggerRandomMotion()}
 
-setTiledBackground('/bg/ceiling-window-room-night.jpeg');
-setTimeout(() => setTiledBackground('/bg/ceiling-window-room-night.jpeg'), 1000);
+setTiledBackground(defaulConfig.background);
+setTimeout(() => setTiledBackground(defaulConfig.background), 1000);
 loadModel(cubism2Model); // Cargar el modelo inicial
 export {
     speakWithLipSync,

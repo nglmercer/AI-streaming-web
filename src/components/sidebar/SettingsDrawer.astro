@@ -5,6 +5,7 @@ import FormField from './FormField.astro';
 import SwitchControl from './SwitchControl.astro';
 import SelectControl from './SelectControl.astro';
 import NumberInput from './NumberInput.astro';
+import TextInput from './TextInput.astro';
 
 const tabs = [
   { id: 'general', label: 'General' },
@@ -49,48 +50,25 @@ const tabs = [
         <div class="space-y-6">
           <!-- Panel General -->
           <div id="general" role="tabpanel" class="tab-panel space-y-4">
-            <SelectControl 
-              label="Language" 
-              placeholder="English"
-              options={[{value: 'en', label: 'English'}, {value: 'zh', label: 'Chinese'}]}
-            />
-            <SwitchControl label="Use Camera Background" />
-            <SwitchControl label="Show Subtitle" checked={true} />
-            <SelectControl 
-              label="Background Image"
-              placeholder="Select from available backgrounds"
-              options={[]}
-            />
-            <FormField label="Or enter a custom background URL">
-              <input type="text" placeholder="Enter image URL" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </FormField>
-            <SelectControl 
-              label="Character Preset"
-              placeholder="Select character preset"
-              options={[]}
-            />
-            <FormField label="WebSocket URL">
-              <input type="text" value="ws://127.0.0.1:12393/client-ws" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </FormField>
-            <FormField label="Base URL">
-              <input type="text" value="http://127.0.0.1:12393" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </FormField>
+
+          <TextInput type="text" value="ws://127.0.0.1:12393/client-ws" id="ws_url" label="WebSocket URL"/>
+          <TextInput type="url" value="http://127.0.0.1:12393" id="base_url" label="Base URL"/>
+
           </div>
 
           <!-- Panel Live2D -->
           <div id="live2d" role="tabpanel" class="tab-panel hidden space-y-2">
-            <SwitchControl label="Pointer Interactive" checked={true} />
-            <SwitchControl label="Enable Scroll to Resize" checked={true} />
+
           </div>
 
           <!-- Panel ASR -->
           <div id="asr" role="tabpanel" class="tab-panel hidden space-y-2">
-            <SwitchControl label="Auto Stop Mic When AI Start Speaking" checked={true} />
-            <SwitchControl label="Auto Start Mic When Conversation End" />
-            <SwitchControl label="Auto Start Mic When AI Interrupted" />
-            <NumberInput label="Speech Prob Threshold" value={50} />
-            <NumberInput label="Negative Speech Threshold" value={35} />
-            <NumberInput label="Redemption Frames" value={35} />
+            <SwitchControl label="Auto Stop Mic When AI Start Speaking" checked={true} id='auto_stop_mic_when_ai_start_speaking'/>
+            <SwitchControl label="Auto Start Mic When Conversation End" id='auto_start_mic_when_conversation_end'/>
+            <SwitchControl label="Auto Start Mic When AI Interrupted" id='auto_start_mic_when_ai_interrupted'/>
+            <NumberInput label="Speech Prob Threshold" value={50} id='speech_prob_threshold'/>
+            <NumberInput label="Negative Speech Threshold" value={35} id='negative_speech_threshold'/>
+            <NumberInput label="Redemption Frames" value={35} id='redemption_frames'/>
           </div>
 
           <!-- Panel TTS -->
@@ -100,8 +78,8 @@ const tabs = [
 
           <!-- Panel Agent -->
           <div id="agent" role="tabpanel" class="tab-panel hidden space-y-2">
-             <SwitchControl label="Allow AI to Speak Proactively" />
-             <SwitchControl label="Prompt AI to Speak via Raise Hand Button" />
+             <SwitchControl label="Allow AI to Speak Proactively" id='allow_ai_to_speak_proactively'/>
+             <SwitchControl label="Prompt AI to Speak via Raise Hand Button" id='prompt_ai_to_speak_via_raise_hand_button'/>
           </div>
 
           <!-- Panel About -->
