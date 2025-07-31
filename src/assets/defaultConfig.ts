@@ -2,11 +2,29 @@ import styleRules from './scheme/styleRules.json';
 import exactConfig from './characters/exact.json';
 import basePrompt from './scheme/basePrompt.json'
 const Providers = {
-    "asr": ['mistral'],// api Required
+    "asr": [],// api Required
     "tts": ['edget-tts'],
     "llm": ['google','openai','claude','deepseek']// api Required
 }
-
+const stringOptions= (arrayString:string[])=>{
+    return arrayString.map((item)=>{
+        return {
+            value: item,
+            label: item,
+        }
+    })
+}
+const langsOptions = [
+            { value: 'es-ES', label: 'Español' },
+            { value: 'en-US', label: 'English' },
+            { value: 'fr-FR', label: 'Français' },
+            { value: 'de-DE', label: 'Deutsch' },
+            { value: 'it-IT', label: 'Italiano' },
+            { value: 'pt-BR', label: 'Português' },
+            { value: 'zh-CN', label: '简体中文' },
+            { value: 'zh-TW', label: '繁體中文' },
+            { value: 'ja-JP', label: '日本語' },
+          ]
 const defaulConfig = {
     port: 12393,
     ws_url: "ws://127.0.0.1:12393/client-ws",
@@ -29,4 +47,15 @@ function generatePrompt(template:{template: string}, config:{[key: string]: stri
   return prompt;
 }
 const exacPrompt = generatePrompt(basePrompt, exactConfig);
-export {defaulConfig,Providers,exacPrompt}
+const defaultPrompt = {
+  conf_name: "",
+  conf_uid: "",
+  persona_prompt: "",
+  style_rules: "",
+  think_tag: "",
+  expression: ""
+};
+defaultPrompt["conf_name"]
+export type DefaultPrompt = typeof defaultPrompt;
+export const exactConfigdts = exactConfig as DefaultPrompt
+export {defaulConfig,Providers,exacPrompt,langsOptions,stringOptions,Modelconfig, defaultPrompt }
