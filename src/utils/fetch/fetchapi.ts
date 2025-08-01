@@ -66,6 +66,11 @@ class TranscriptApi extends BaseApi {
   }
 }
 const transcriptApi = new TranscriptApi(apiConfig);
+class AssetsApi extends BaseApi {
+  constructor(config: any) {
+    super(config);
+  }
+}
 /*
 import TranscriptApi from './services/TranscriptApi';
 import apiConfig from './config/apiConfig';
