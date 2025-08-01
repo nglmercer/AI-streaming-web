@@ -1,27 +1,16 @@
 // src/scripts/live2d-handler.ts
 
 import * as PIXI from "pixi.js";
-import { defaulConfig } from "@assets/defaultConfig";
+import { defaulConfig,cdnModels } from "@assets/defaultConfig";
 import {   
   Live2DModel,   
   MotionPreloadStrategy,   
   MotionPriority   
 } from 'pixi-live2d-display-lipsyncpatch';
-// --- REGISTRO DE PLUGINS ---
-// Esto se hace aquí, al principio del script del cliente.
-// Astro se asegurará de que este código solo se ejecute en el navegador.
-
-// --- Definición de los modelos ---
-const cubism2Model = "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/shizuku/shizuku.model.json";
-const cubism4Model = "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json";
-const shizuku_JSON = '/models/shizuku/shizuku.model.json';
-// --- Variables Globales ---
 let currentModel: Live2DModel | null = null;
 
 // Obtener elementos del DOM (Asegúrate de que el script se cargue después de que el HTML exista)
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-const btnShizuku = document.getElementById('btn-shizuku') as HTMLButtonElement;
-const btnHaru = document.getElementById('btn-haru') as HTMLButtonElement;
 const btnExpression = document.getElementById('btn-expression') as HTMLButtonElement;
 const btnMotion = document.getElementById('btn-motion') as HTMLButtonElement;
 const loadingText = document.getElementById('loading-text') as HTMLParagraphElement;
@@ -43,8 +32,6 @@ async function setTiledBackground(src: string) {
     
     console.log("setTiledBackground",src,canvas);
 }
-// --- Funciones (sin cambios) ---
-
 async function loadModel(url: string) {  
     toggleControls(false);  
     loadingText.classList.remove('hidden');  
@@ -87,8 +74,6 @@ async function loadModel(url: string) {
 }
 
 function toggleControls(enabled: boolean) {
-    btnShizuku.disabled = !enabled;
-    btnHaru.disabled = !enabled;
     btnExpression.disabled = !enabled;
     btnMotion.disabled = !enabled;
 }
@@ -173,14 +158,11 @@ function stopLipSyncAudio() {
         currentModel.stopSpeaking();
     }
 }
-// --- Asignar eventos y carga inicial ---
-btnShizuku.onclick = () => loadModel(cubism2Model);
-btnHaru.onclick = () => loadModel(cubism4Model);
 btnExpression.onclick = ()=>{triggerRandomExpression()}
 btnMotion.onclick = ()=>{triggerRandomMotion()}
 
 //setTiledBackground(defaulConfig.background);
-loadModel(cubism2Model); // Cargar el modelo inicial
+loadModel(cdnModels.cubism2Model); // Cargar el modelo inicial
 export {
     speakWithLipSync,
     getAvailableExpressions,

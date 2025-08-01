@@ -13,17 +13,7 @@ import DraggableDialog from './dialog/DraggableDialog.astro';
 <div id="app-container" class="flex justify-center relative h-full border-2 border-gray-600 rounded-lg shadow-lg m-2">
     <canvas id="canvas" class="h-full block aspect-auto"></canvas>
     <DraggableDialog title="Controles">
-        
         <div>
-            <p class="font-semibold mb-2">Cambiar Modelo:</p>
-            <div class="flex space-x-2">
-                <button id="btn-shizuku" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Shizuku (v2)</button>
-                <button id="btn-haru" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Haru (v4)</button>
-            </div>
-        </div>
-        
-        <div>
-            <p class="font-semibold mb-2">Probar Reacciones:</p>
             <div class="flex space-x-2">
                 <button id="btn-expression" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Expresión</button>
                 <button id="btn-motion" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">Movimiento</button>

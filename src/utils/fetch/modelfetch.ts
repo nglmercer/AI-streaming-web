@@ -8,13 +8,20 @@ class ModelsApi extends BaseApi {
   constructor(config: any) {
     super(config);
   }
-  async getModels(modelName:string){
+  async getModel(modelName:string){
     return this.get<Live2DModelSetting>(`/models/json/${modelName}`);
+  }
+  async getModelList(){
+    return this.get<string[]>(`/models/list`);
   }
 }
 const modelsApi = new ModelsApi(apiConfig);
 /* async function test() {
-        const result = await modelsApi.getModels('shizuku');
+        const result = await modelsApi.getModelList();
+        result.forEach(async (item) => {
+            const model = await modelsApi.getModel(item);
+            console.log("model",model);
+        })
         console.log("result",result);
 }
 test(); */

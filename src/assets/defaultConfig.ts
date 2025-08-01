@@ -32,8 +32,18 @@ const defaulConfig = {
     lang: "es-ES",
     background: "/bg/ceiling-window-room-night.jpeg"
 }
+export const cdnModels = {
+   cubism2Model: "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/shizuku/shizuku.model.json",
+   cubism4Model: "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json"
+}
 const Modelconfig = {
-    avaible: ['shizuku','haru'],
+    avaible: [{
+      label:'shizuku',
+      value:cdnModels.cubism2Model,
+    },{
+      label:'haru',
+      value:cdnModels.cubism4Model,
+    }],
     default: 'shizuku',
     upload: []
 }
