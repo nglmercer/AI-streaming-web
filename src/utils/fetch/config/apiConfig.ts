@@ -51,4 +51,4 @@ const apiConfig: ApiConfig = {
 };
 
 export default apiConfig;
-export type{ ApiConfig, ProxyConfig};
+export type{ ApiConfig, ProxyConfig,apiConfig};

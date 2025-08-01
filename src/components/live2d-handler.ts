@@ -7,13 +7,15 @@ import {
   MotionPreloadStrategy,   
   MotionPriority   
 } from 'pixi-live2d-display-lipsyncpatch';
+import { configStorage,emitterData } from "./sidebar/listeners/formPersistence";
+import { modelsApi } from "@utils/fetch/modelfetch";
+import { isURL } from "@utils/fetch/validtype";
 let currentModel: Live2DModel | null = null;
 
 // Obtener elementos del DOM (Asegúrate de que el script se cargue después de que el HTML exista)
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const btnExpression = document.getElementById('btn-expression') as HTMLButtonElement;
 const btnMotion = document.getElementById('btn-motion') as HTMLButtonElement;
-const loadingText = document.getElementById('loading-text') as HTMLParagraphElement;
 
 // @ts-ignore
 const app = new PIXI.Application({  
@@ -34,7 +36,6 @@ async function setTiledBackground(src: string) {
 }
 async function loadModel(url: string) {  
     toggleControls(false);  
-    loadingText.classList.remove('hidden');  
   
     if (currentModel) {  
         app.stage.removeChild(currentModel as any);  
@@ -51,7 +52,7 @@ async function loadModel(url: string) {
             motionPreload: MotionPreloadStrategy.IDLE,  
             // idleMotionGroupName: 'idle' // opcional, si tu modelo lo soporta  
         });  
-          
+        
         app.stage.addChild(currentModel as any);  
   
         const scale = Math.min(  
@@ -69,7 +70,6 @@ async function loadModel(url: string) {
         console.error("Error al cargar el modelo:", error);  
     } finally {  
         toggleControls(true);  
-        loadingText.classList.add('hidden');  
     }  
 }
 
@@ -160,9 +160,32 @@ function stopLipSyncAudio() {
 }
 btnExpression.onclick = ()=>{triggerRandomExpression()}
 btnMotion.onclick = ()=>{triggerRandomMotion()}
-
+emitterData.on('model2d',async(string)=>{
+    console.log("string",string)
+    if (!string)return;
+    const isUrl = isURL(string);
+    if (isUrl){
+        loadModel(String(string));
+    } else {
+        const model = await modelsApi.getModelUrlIfExists(string);
+        if (!model)return
+         loadModel(model);
+    }
+    
+})
 //setTiledBackground(defaulConfig.background);
-loadModel(cdnModels.cubism2Model); // Cargar el modelo inicial
+async function InitModel(){
+    const saveModel = await configStorage.getAll();
+    const isUrl = isURL(saveModel.model2d);
+    if (isUrl){
+        loadModel(saveModel.model2d);
+    } else {
+        const model = await modelsApi.getModelUrlIfExists(saveModel.model2d);
+        if (!model)return
+         loadModel(model);
+    }
+}
+InitModel()
 export {
     speakWithLipSync,
     getAvailableExpressions,

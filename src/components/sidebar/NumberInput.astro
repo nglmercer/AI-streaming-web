@@ -19,31 +19,3 @@ const { label, value,id } = Astro.props;
     />
   </div>
 </FormField>
-<script>
-    import { DataStorage,LocalStorageAdapter } from "json-obj-manager";
-    const ConfigData = new DataStorage<string>(new LocalStorageAdapter('config'))
-  // src/components/sidebar/NumberInput.astro
-  document.addEventListener('DOMContentLoaded',async () => {
-    const numberInputs = document.querySelectorAll('input[type="number"][id]');
-    const alldata = await ConfigData.getAll()
-    console.log("ConfigData",alldata)
-    numberInputs.forEach(input => {
-      const inputElement = input as HTMLInputElement;
-      const id = inputElement.getAttribute('id');
-
-      if (id) {
-        const storedValue = alldata[id]
-        if (storedValue) {
-          inputElement.value = storedValue;
-        }
-
-        inputElement.addEventListener('input', (event) => {
-          const target = event.target as HTMLInputElement;
-          console.log("input",target.value)
-          if (!target) return;
-          ConfigData.save(id,target.value)
-        });
-      }
-    });
-  });
-</script>

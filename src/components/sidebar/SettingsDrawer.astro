@@ -3,10 +3,12 @@
 import Icon from './Icon.astro';
 import FormField from './FormField.astro';
 import SwitchControl from './SwitchControl.astro';
-import SelectControl from './SelectControl.astro';
+import SelectStatic from './SelectStatic.astro';
+import SelectSimple from './SelectSimple.astro'
 import NumberInput from './NumberInput.astro';
 import TextInput from './TextInput.astro';
 import { defaulConfig,langsOptions,Providers,stringOptions,Modelconfig,exactConfigdts  } from '@assets/defaultConfig';
+import { select_visible } from '@assets/classconst';
 const tabs = [
   { id: 'general', label: 'General' },
   { id: 'agent', label: 'Agent' },
@@ -53,10 +55,10 @@ const tabs = [
 
           <TextInput type="text" value={defaulConfig.ws_url} id="ws_url" label="WebSocket URL"/>
           <TextInput type="url" value={defaulConfig.base_url} id="base_url" label="Base URL"/>
-          <SelectControl label="Language" id="lang" options={langsOptions} id="lang" label="Language" placeholder='Select Language'/>
-          <SelectControl label="Model llm" id="Model_llm" options={stringOptions(Providers.llm)} label="Model" placeholder='Select Model llm'/>
-          <SelectControl label="model 2d" id="model2d" options={Modelconfig.avaible} label="Model2d" placeholder='Select Model 2d'/>
-            
+          <SelectStatic label="Language" id="lang" options={langsOptions} id="lang" label="Language" placeholder='Select Language'/>
+          <SelectStatic label="Model llm" id="Model_llm" options={stringOptions(Providers.llm)} label="Model" placeholder='Select Model llm'/>
+          <SelectSimple label="model 2d" id="model2d" placeholder='select your model'>
+             </FormField>
         </div>
 
           <!-- Panel Live2D -->
@@ -111,7 +113,9 @@ const tabs = [
 
 
 <script>
+  import { initializePersistentFormControls } from "./listeners/formPersistence";
   document.addEventListener('DOMContentLoaded', () => {
+    initializePersistentFormControls()
     const tabContainer = document.getElementById('settings-tabs');
     if (!tabContainer) return;
 
