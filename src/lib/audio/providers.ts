@@ -1,4 +1,4 @@
-import { Emitter,emitter } from '../Emitter';
+import { Emitter,emitter } from '@utils/Emitter';
 import { speakWithLipSync, stopLipSyncAudio, triggerRandomExpression, triggerRandomMotion } from '../../components/live2d-handler'; 
 import type { audioEvent } from '../../components/types/ws_model'
 

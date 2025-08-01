@@ -1,5 +1,5 @@
 import { MicVAD } from "@ricky0123/vad-web";
-import { emitter } from "@lib/Emitter";
+import { emitter } from "@utils/Emitter";
 
 // MicrophoneControllerVAD.ts
 export class MicrophoneControllerVAD {

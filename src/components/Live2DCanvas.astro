@@ -49,7 +49,7 @@ import DraggableDialog from './dialog/DraggableDialog.astro';
   import './live2d-handler.ts';
 import { WsConnectionManager } from '../lib/WsConnectionManager';
 import type { ConnectionState, Message } from '../lib/types';
-import { emitter } from '../lib/Emitter';
+import { emitter } from '@utils/Emitter';
 import { type ProvidersMap,AudioQueue } from '../lib/audio/audio_queue';
 import { WebSocketAudioProvider } from '../lib/audio/providers';
 import type { MessageEvent,RemovedValue } from './types/ws_model';

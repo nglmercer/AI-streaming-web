@@ -47,9 +47,9 @@ const defaultBtn = "p-2 rounded-full text-slate-700 dark:text-slate-200 hover:bg
   </form>
 </div>
 <script>
-  import { emitter } from "../../lib/Emitter";
+  import { emitter } from "@utils/Emitter";
 import { MicrophoneControllerVAD } from "./MicrophoneControllerVAD";
-import { transcriptApi } from "@lib/fetch/fetchapi";
+import { transcriptApi } from "@utils/fetch/fetchapi";
     console.log("emitter","inited");
     function initializeForm() {
         const form = document.querySelector<HTMLFormElement>("#chat-form");

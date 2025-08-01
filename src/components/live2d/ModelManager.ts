@@ -1,50 +1,3 @@
-// src/scripts/live2d-handler.ts
-
-import * as PIXI from "pixi.js";
-import { defaulConfig } from "@assets/defaultConfig";
-import {   
-  Live2DModel,   
-  MotionPreloadStrategy,   
-  MotionPriority   
-} from 'pixi-live2d-display-lipsyncpatch';
-// --- REGISTRO DE PLUGINS ---
-// Esto se hace aquí, al principio del script del cliente.
-// Astro se asegurará de que este código solo se ejecute en el navegador.
-
-// --- Definición de los modelos ---
-const cubism2Model = "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/shizuku/shizuku.model.json";
-const cubism4Model = "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json";
-const shizuku_JSON = '/models/shizuku/shizuku.model.json';
-// --- Variables Globales ---
-let currentModel: Live2DModel | null = null;
-
-// Obtener elementos del DOM (Asegúrate de que el script se cargue después de que el HTML exista)
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-const btnShizuku = document.getElementById('btn-shizuku') as HTMLButtonElement;
-const btnHaru = document.getElementById('btn-haru') as HTMLButtonElement;
-const btnExpression = document.getElementById('btn-expression') as HTMLButtonElement;
-const btnMotion = document.getElementById('btn-motion') as HTMLButtonElement;
-const loadingText = document.getElementById('loading-text') as HTMLParagraphElement;
-
-// @ts-ignore
-const app = new PIXI.Application({  
-    view: canvas,  
-    autoStart: true,  
-    backgroundColor: 0x000000,  
-    resolution: window.devicePixelRatio || 1,
-    autoResize: true,
-    backgroundAlpha: 0
-});
-
-async function setTiledBackground(src: string) {
-    if (!canvas) return;
-    canvas.style.backgroundImage = `url(${src})`;
-    canvas.style.backgroundSize = 'cover';
-    
-    console.log("setTiledBackground",src,canvas);
-}
-// --- Funciones (sin cambios) ---
-
 async function loadModel(url: string) {  
     toggleControls(false);  
     loadingText.classList.remove('hidden');  
@@ -85,14 +38,13 @@ async function loadModel(url: string) {
         loadingText.classList.add('hidden');  
     }  
 }
-
-function toggleControls(enabled: boolean) {
-    btnShizuku.disabled = !enabled;
-    btnHaru.disabled = !enabled;
-    btnExpression.disabled = !enabled;
-    btnMotion.disabled = !enabled;
+async function setTiledBackground(src: string) {
+    if (!canvas) return;
+    canvas.style.backgroundImage = `url(${src})`;
+    canvas.style.backgroundSize = 'cover';
+    
+    console.log("setTiledBackground",src,canvas);
 }
-// Función adicional para obtener lista de expresiones  
 function getAvailableExpressions(): string[] {  
     if (!currentModel) return [];  
       
@@ -139,12 +91,6 @@ function triggerRandomMotion(groupName?: string): void {
     // Reproducir el movimiento seleccionado
     currentModel.motion(groupName || randomMotion, undefined, priority);
 }
-/**
- * Reproduce un audio con lip-sync y notifica su estado a través de callbacks.
- * @param audioUrl La URL del audio a reproducir.
- * @param onFinish Callback que se ejecuta cuando el audio termina.
- * @param onError Callback que se ejecuta si hay un error.
- */
 async function speakWithLipSync(audioUrl: string, onFinish: () => void, onError: (e: any) => void) {
     if (!currentModel) {
         console.error("No hay un modelo Live2D cargado para hablar.");
@@ -172,19 +118,4 @@ function stopLipSyncAudio() {
         // La biblioteca tiene su propio método para detener el habla
         currentModel.stopSpeaking();
     }
-}
-// --- Asignar eventos y carga inicial ---
-btnShizuku.onclick = () => loadModel(cubism2Model);
-btnHaru.onclick = () => loadModel(cubism4Model);
-btnExpression.onclick = ()=>{triggerRandomExpression()}
-btnMotion.onclick = ()=>{triggerRandomMotion()}
-
-//setTiledBackground(defaulConfig.background);
-loadModel(cubism2Model); // Cargar el modelo inicial
-export {
-    speakWithLipSync,
-    getAvailableExpressions,
-    triggerRandomExpression,
-    triggerRandomMotion,
-    stopLipSyncAudio
 }

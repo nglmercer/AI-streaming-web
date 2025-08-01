@@ -1,6 +1,6 @@
 // WsClient.ts
 
-import { Emitter } from './Emitter';
+import { Emitter } from '@utils/Emitter';
 import type { ConnectionOptions, ConnectionState, ConnectionStatus, Message } from './types';
 
 export class WsClient extends Emitter {
