@@ -13,18 +13,18 @@ const { label, placeholder, options, id, value } = Astro.props;
 ---
 <FormField {label}>
   <div class="relative">
-    <select 
+    <select
       id={id}
-      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer dark:bg-gray-800"
     >
       <option value="" disabled>{placeholder}</option>
       {options.map(opt => (
-        <option value={opt.value} selected={value === opt.value}>
+        <option value={opt.value} selected={value === opt.value} class="bg-gray-700 dark:bg-gray-800 dark:text-gray-100">
           {opt.label}
         </option>
       ))}
     </select>
-    <div class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white flex items-center justify-between pointer-events-none">
+    <div class="bg-gray-700 dark:bg-gray-800 border border-gray-600 dark:border-gray-500 rounded-md px-3 py-2 dark:text-gray-100 flex items-center justify-between pointer-events-none">
       <span class="select-display">{value ? options.find(opt => opt.value === value)?.label || placeholder : placeholder}</span>
       <Icon name="expand_more" />
     </div>
