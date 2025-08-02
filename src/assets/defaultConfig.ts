@@ -40,9 +40,6 @@ const Modelconfig = {
     avaible: [{
       label:'shizuku',
       value:cdnModels.cubism2Model,
-    },{
-      label:'haru',
-      value:cdnModels.cubism4Model,
     }],
     default: 'shizuku',
     upload: []

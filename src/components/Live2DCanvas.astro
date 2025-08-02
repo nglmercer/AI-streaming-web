@@ -118,6 +118,9 @@ const onMessages = (data: Message) => {
   if (type === 'text-input' || type === 'full-text') {
     emitSubtittles(messageData.text)
   }
+  if (type === 'ERROR'){
+    console.log("ERROR",messageData)
+  }
 }
 function ModelActions(actions:RemovedValue[]){
   if (actions && actions.length > 0) {
