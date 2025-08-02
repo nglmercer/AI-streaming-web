@@ -1,10 +1,12 @@
 ---
+import '../styles/global.css';
 interface Props {
 	title: string;
 }
 
 const { title } = Astro.props;
-import '../styles/global.css';
+const urlbase = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const base = urlbase;	
 ---
 
 <!doctype html>
@@ -15,8 +17,8 @@ import '../styles/global.css';
 		<meta name="viewport" content="width=device-width" />
 		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<script src="/libs/live2d.min.js" is:inline></script>
-		<script src="/libs/live2dcubismcore.min.js" is:inline></script>
+		<script src={`${base}libs/live2d.min.js`} is:inline></script>
+		<script src={`${base}libs/live2dcubismcore.min.js`} is:inline></script>
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>

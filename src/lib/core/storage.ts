@@ -1,6 +1,6 @@
 import {type StorageAdapter } from './types';
 import {type AllowedData } from './types';
-import { Emitter } from '@utils/Emitter';
+import { Emitter,emitter } from '@utils/Emitter';
 
 export class DataStorage<T extends AllowedData> {
   private adapter: StorageAdapter<T>;
