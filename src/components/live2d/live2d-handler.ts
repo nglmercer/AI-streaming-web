@@ -7,7 +7,7 @@ import {
   MotionPreloadStrategy,   
   MotionPriority   
 } from 'pixi-live2d-display-lipsyncpatch';
-import { configStorage,emitterData } from "./sidebar/listeners/formPersistence";
+import { configStorage,emitterData } from "../sidebar/listeners/formPersistence";
 import { modelsApi } from "@utils/fetch/modelfetch";
 import { isURL } from "@utils/fetch/validtype";
 let currentModel: Live2DModel | null = null;

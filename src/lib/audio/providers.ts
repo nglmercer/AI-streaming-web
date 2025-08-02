@@ -1,5 +1,5 @@
 import { Emitter,emitter } from '@utils/Emitter';
-import { speakWithLipSync, stopLipSyncAudio, triggerRandomExpression, triggerRandomMotion } from '../../components/live2d-handler'; 
+import { speakWithLipSync, stopLipSyncAudio, triggerRandomExpression, triggerRandomMotion } from '../../components/live2d/live2d-handler'; 
 import type { audioEvent } from '../../components/types/ws_model'
 
 // Interfaz para la configuración del TTS Provider
