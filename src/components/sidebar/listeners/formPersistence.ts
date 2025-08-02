@@ -1,6 +1,8 @@
 // src/lib/formPersistence.ts
 
-import { DataStorage, LocalStorageAdapter,Emitter } from "json-obj-manager";
+import { DataStorage } from '@lib/core/storage';
+import { LocalStorageAdapter } from '@lib/core/local-storage-adapter';
+import { Emitter } from '@utils/Emitter';
 const emitterData = new Emitter();
 // 1. Instancia única del almacenamiento.
 const configStorage = new DataStorage<string>(new LocalStorageAdapter('config'));
