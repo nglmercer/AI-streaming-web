@@ -6,19 +6,12 @@ import { type ProvidersMap,AudioQueue } from '@lib/audio/audio_queue';
 import { WebSocketAudioProvider } from '@lib/audio/providers';
 import type { MessageEvent,RemovedValue } from '../types/ws_model';
 import { triggerRandomExpression, triggerRandomMotion } from './live2d-handler.ts';
+import { Subtitles } from '@components/Subtitles/subcore.ts';
 const wsAudioProvider = new WebSocketAudioProvider();
-// 2. Crear el mapa de proveedores para AudioQueue
 const providers: ProvidersMap = {
-  // Puedes tener otros proveedores aquí, como StreamElements, etc.
-  // 'streamElements': { instance: new StreamElementsProvider(), initialized: false },
-  
-  // Añade tu nuevo proveedor con un nombre único
   'websocketAudio': { instance: wsAudioProvider, initialized: true }
 };
-//emitter.emit('subtitles:show', { text: '¡Hola! Este es un <b>subtítulo</b> permanente.' });
-// 3. Crear la instancia de AudioQueue
 const audioQueue = new AudioQueue(providers, { mode: 'archive' });
-// 1. new Class
 const wsManager = new WsConnectionManager();
 const template = (text: string, type: string = 'text-input'): {
   type: string;
@@ -46,7 +39,7 @@ wsManager.on('connectionCreated', (state: ConnectionState) => {
 
 // 3. Crear múltiples conexiones
 // Usaremos un servicio de echo público para las pruebas.
-const wsExampel = "ws://127.0.0.1:12393/client-ws"
+const wsserver = "ws://127.0.0.1:12393/client-ws"
 // Conexión 1: Echo Básico
 const onError = (...args:any) => {
   console.log('CALLBACK:', ...args);
@@ -78,10 +71,11 @@ const onMessages = (data: Message) => {
     });
   }
   if (type === 'text-input' || type === 'full-text') {
-    emitSubtittles(messageData.text)
+    Subtitles.show({ text: messageData.text });
   }
   if (type === 'ERROR'){
     console.log("ERROR",messageData)
+    Subtitles.show({ text: JSON.stringify(messageData), position: Subtitles.POSITIONS.TOP_CENTER });
   }
 }
 function ModelActions(actions:RemovedValue[]){
@@ -96,13 +90,10 @@ function ModelActions(actions:RemovedValue[]){
     });
   }
 }
-function emitSubtittles(text: string) {
-    emitter.emit('subtitles:show', { text: text,duration:5000 });
-}
 wsManager.createConnection({
   id: 'ws_api',
-  name: 'Echo Server Básico',
-  url: wsExampel, // Un servidor de echo público y confiable
+  name: 'ai server',
+  url: wsserver,
   onOpen: onConnect,
   onMessage: onMessages,
   onClose: onError,
@@ -112,26 +103,12 @@ const ws_api = wsManager.getConnection('ws_api');
 emitter.on('send:text-input', (data: string) => {
   const templateData = template(data);
   if (!ws_api) return;
+  StateSubs('thinking...');
   ws_api.send(templateData);
 })
-
-//console.log("ws_api",ws_api)
-
-
-/*
-{"type": 'text-input',"text": 'de que tamaño crees que es el universo?',"images": []}
-{"type":"add-client-to-group","invitee_uid":"571495c2-8dcb-4a74-8979-d6ad51dece1a"}
-*/
-
-/*
-const sendMessage = wsManager.send('ws_api', template('de que tamaño crees que es el universo?'));
-console.log("sendMessage",sendMessage)
-*/
-
-/* 
-wsManager.connect('echo-2'); 
-{"type":"text-input","text":"COMO ESTAS","images":[]}
-*/
+export function StateSubs(state:string){
+    Subtitles.show({ text: state, position: Subtitles.POSITIONS.TOP_CENTER, duration: 2000 });
+}
 async function initializeConnection(){
     const button_connect = document.getElementById('ws_status');
     ws_api?.connect();//non return
@@ -142,40 +119,26 @@ async function initializeConnection(){
 }
 async function changeStateIndicator(text: string) {
     const button_connect = document.getElementById('ws_status') as HTMLButtonElement;
-
-    // 1. Validar que el botón y el texto existen
-    if (!button_connect || typeof text !== 'string') {
-        return;
-    }
-
-    // 2. Actualizar el texto del botón
+    if (!button_connect || typeof text !== 'string') return;
+    
     button_connect.textContent = text;
 
-    // 3. Mapa de estados a clases de Tailwind
-    //    Usamos claves en minúsculas para hacer la comparación más fiable.
     const colorMap: { [key: string]: string } = {
         'connected': 'bg-green-600',
         'disconnect': 'bg-red-600',
-        'reconnecting': 'bg-blue-600' // Corregí 'reconnecti'
+        'reconnecting': 'bg-blue-600'
     };
     
-    // 4. Lista de todas las clases de color que podríamos querer quitar
     const allClassesToRemove = Object.values(colorMap);
-    // Si usas otras clases de color, añádelas aquí. Ej: ['bg-green-600', 'bg-red-600', ...]
-
-    // 5. Limpiar clases de color anteriores para evitar conflictos
-    //    Ej: que el botón no tenga 'bg-green-600' y 'bg-red-600' a la vez.
     button_connect.classList.remove(...allClassesToRemove);
 
-    // 6. Encontrar y añadir la nueva clase de color
     const normalizedText = text.toLowerCase();
-    const classToAdd = colorMap[normalizedText]; // Busca la clase usando el texto como clave
+    const classToAdd = colorMap[normalizedText]; 
 
     if (classToAdd) {
         button_connect.classList.add(classToAdd);
     } else {
-        // Opcional: Añadir una clase por defecto si el texto no coincide con ninguna clave
-        button_connect.classList.add('bg-gray-400'); // Por ejemplo, un color neutro
+        button_connect.classList.add('bg-gray-400');
     }
 }
 document.addEventListener('DOMContentLoaded', initializeConnection);

@@ -119,10 +119,10 @@ function triggerRandomMotion(groupName?: string): void {
     const randomIndex = Math.floor(Math.random() * motions.length);
     const randomMotion = motions[randomIndex];
 
-    console.log("Selected random motion:", randomMotion);
-
+    const motionSelected = typeof groupName === 'string' ? groupName : randomMotion;
+    console.log("Selected random motion:", motionSelected);
     // Reproducir el movimiento seleccionado
-    currentModel.motion(groupName || randomMotion, undefined, priority);
+    currentModel.motion(motionSelected, undefined, priority);
 }
 /**
  * Reproduce un audio con lip-sync y notifica su estado a través de callbacks.

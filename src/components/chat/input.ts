@@ -1,6 +1,7 @@
 import { emitter } from "@utils/Emitter";
 import { MicrophoneControllerVAD } from "./MicrophoneControllerVAD";
 import { transcriptApi } from "@utils/fetch/fetchapi";
+import { StateSubs } from "@components/live2d/main";
 console.log("emitter", "inited");
 function initializeForm() {
   const form = document.querySelector<HTMLFormElement>("#chat-form");
@@ -42,12 +43,13 @@ emitter.on("vad:start", () => console.log("Turno de voz iniciado"));
 emitter.on(
   "vad:end",
   async (data: { buffer: Float32Array; timestamp: number }) => {
-    console.log("Turno de voz finalizado, buffer listo para IA", data);
+    StateSubs('listening...');
     await transcriptApi
       .transcribe({ type: "float32array", data: data.buffer })
       .then((res) => {
         console.log("res", res);
         emitter.emit("send:text-input", res.transcript);
+        StateSubs(res.transcript);
       });
   }
 );
