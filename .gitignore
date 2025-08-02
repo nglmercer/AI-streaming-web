@@ -27,3 +27,4 @@ pnpm-debug.log*
 styled-system
 styled-system-studio
 public/models/
+package-lock.json
