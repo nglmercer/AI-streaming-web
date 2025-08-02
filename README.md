@@ -1,52 +1,59 @@
-# Astro Starter Kit: Basics
+# Proyecto Cliente WebSocket con Live2D
 
-```sh
-npm create astro@latest -- --template basics
-```
+Este proyecto es una aplicación web interactiva que muestra un personaje de Live2D y se conecta a un servidor WebSocket para recibir actualizaciones y comandos en tiempo real. La interfaz está construida con Astro y Svelte, utilizando Tailwind CSS para el estilo.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## Características Principales
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- **Visualización de Live2D:** Muestra un modelo de Live2D en un lienzo (`<canvas>`).
+- **Interactividad:** El modelo puede reaccionar a eventos con expresiones y movimientos.
+- **Conexión WebSocket:** Utiliza un gestor de conexiones (`WsConnectionManager`) para comunicarse con un servidor WebSocket.
+- **Cola de Audio:** Gestiona y reproduce audio recibido a través del WebSocket.
+- **Subtítulos:** Muestra subtítulos para los mensajes de texto recibidos.
+- **Componentes Modulares:** La aplicación está dividida en componentes reutilizables de Astro para una mejor organización.
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## ¿Cómo funciona?
 
-## 🚀 Project Structure
+La aplicación se inicializa en `Live2DCanvas.astro`. Este componente se encarga de:
 
-Inside of your Astro project, you'll see the following folders and files:
+1.  **Configurar el WebSocket:** Crea una conexión a un servidor WebSocket (por defecto, `ws://127.0.0.1:12393/client-ws`).
+2.  **Manejar Mensajes:** Escucha los mensajes entrantes del servidor. Dependiendo del tipo de mensaje (`audio`, `text-input`, `full-text`), realiza diferentes acciones:
+    *   **Audio:** Encola y reproduce el audio recibido. También puede disparar animaciones (expresiones o movimientos) en el modelo de Live2D.
+    *   **Texto:** Muestra el texto como subtítulos en la pantalla.
+3.  **Gestionar el Estado de la Conexión:** Muestra el estado actual de la conexión WebSocket (conectado, desconectado, reconectando) en un indicador visual.
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+## Tecnologías Utilizadas
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+- **Frontend:**
+  - [Astro](https://astro.build/)
+  - [Svelte](https://svelte.dev/)
+  - [Tailwind CSS](https://tailwindcss.com/)
+- **Live2D y Gráficos:**
+  - [PixiJS](https://pixijs.com/)
+  - `pixi-live2d-display-lipsyncpatch`
+- **Comunicación:**
+  - `websocket-ts`
+- **Gestión de Audio:**
+  - `@ricky0123/vad-web`
 
-## 🧞 Commands
+## Cómo Empezar
 
-All commands are run from the root of the project, from a terminal:
+1.  **Instalar dependencias:**
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+    ```bash
+    npm install
+    ```
 
-## 👀 Want to learn more?
+2.  **Iniciar el servidor de desarrollo:**
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+    ```bash
+    npm run dev
+    ```
+
+3.  Abre tu navegador en la dirección que te indique la consola (normalmente `http://localhost:4321`).
+
+## Estructura del Proyecto
+
+- `src/components`: Contiene los componentes de Astro, como `Live2DCanvas.astro`, que es el componente principal.
+- `src/lib`: Incluye la lógica de la aplicación, como el gestor de WebSocket (`WsConnectionManager.ts`) y la gestión de audio.
+- `src/pages`: Las páginas de la aplicación Astro.
+- `public/libs`: Librerías de terceros como `live2d.min.js` y `pixi.min.js`.
