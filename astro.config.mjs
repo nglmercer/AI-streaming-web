@@ -16,5 +16,6 @@ export default defineConfig({
   },
 
   integrations: [svelte()],
-  
+  site: 'https://nglmercer.github.io/AI-streaming-web',
+  base: '/AI-streaming-web',
 });
