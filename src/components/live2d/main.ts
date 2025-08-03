@@ -1,5 +1,4 @@
 import "./live2d-handler.ts";
-import type { ConnectionState, Message } from "@lib/types";
 import { emitter } from "@utils/Emitter";
 import { type ProvidersMap, AudioQueue } from "@lib/audio/audio_queue";
 import { WebSocketAudioProvider } from "@lib/audio/providers";

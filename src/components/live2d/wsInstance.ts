@@ -1,7 +1,9 @@
 import { WsConnectionManager } from '@lib/WsConnectionManager';
 import type { ConnectionState, Message } from '@lib/types';
 import { audioQueue,ModelActions } from './main';
+import { initBackgroundSelect } from '@components/sidebar/configUpdate';
 import { Subtitles, StateSubs } from "@components/Subtitles/subcore.ts";
+import { configStorage } from "@components/sidebar/listeners/formPersistence";
 const wsManager = new WsConnectionManager();
 const template = (text: string, type: string = 'text-input'): {
   type: string;
@@ -64,21 +66,22 @@ const onConnect = (data: any) => {
     type: 'fetch-backgrounds',
     })
 };
-const onMessages = (data: Message) => {
+const onMessages = async (data: Message) => {
   if (!data || !data.data) return;
   console.log("data.data", data.data);
   const messageData = data.data;
   const { type } = messageData as MessageEvent;
-  if (type === "audio") {
-    if (!messageData.audio) return;
-    ModelActions(messageData.payload);
-    audioQueue
-      .enqueue(
-        messageData.audio, //base64
-        "websocketAudio",
-        {
-          messageData,
-        },
+  switch (type) {
+    case "audio":
+      if (!messageData.audio) return;
+      ModelActions(messageData.payload);
+      audioQueue
+        .enqueue(
+          messageData.audio, //base64
+          "websocketAudio",
+          {
+            messageData,
+          },    
         false // `false` para encolar.
       )
       .then((audioId) => {
@@ -87,16 +90,26 @@ const onMessages = (data: Message) => {
       .catch((error) => {
         console.error("Error al encolar el audio desde WebSocket:", error);
       });
-  }
-  if (type === "text-input" || type === "full-text") {
-    Subtitles.show({ text: messageData.text });
-  }
-  if (type === "ERROR") {
-    console.log("ERROR", messageData);
-    Subtitles.show({
-      text: JSON.stringify(messageData),
-      position: Subtitles.POSITIONS.TOP_CENTER,
-    });
+      break;
+    case "text-input":
+    case "full-text":
+      Subtitles.show({ text: messageData.text });
+      break;
+    case "ERROR":
+      console.log("ERROR", messageData);
+      Subtitles.show({
+        text: JSON.stringify(messageData),
+        position: Subtitles.POSITIONS.TOP_CENTER,
+      });
+      break;
+    case "background-files":
+        const alldata = await configStorage.getAll();
+        initBackgroundSelect(messageData.files,alldata);
+      console.log("background-files", messageData);
+      break;
+    default:
+      console.log("default", messageData);
+      break;
   }
 };
 wsManager.createConnection({

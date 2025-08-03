@@ -2,13 +2,14 @@ import { modelsApi } from "@utils/fetch/modelfetch";
 import { stringOptions,Modelconfig } from "@assets/defaultConfig";
 import { configStorage } from "./listeners/formPersistence";
 import { ws_api } from "@components/live2d/wsInstance";
+import type { BackgroundFile } from "@components/types/ws_model";
 import apiConfig from "@utils/fetch/config/apiConfig";
 const modelSelect = document.getElementById('model2d') as HTMLSelectElement;
 const BGimgSelect = document.getElementById('Background_img') as HTMLSelectElement;
 async function initSelects() {
         const allData = await configStorage.getAll()
         initmodelSelect(allData)
-        initBackgroundSelect(allData)
+        initBackgroundSelect([],allData)
 }
 async function initmodelSelect(allData:Record<string,string>) {
     if (!modelSelect)return;
@@ -34,10 +35,15 @@ async function initmodelSelect(allData:Record<string,string>) {
        modelSelect.value = allData.model2d;
     }   
 }
-async function initBackgroundSelect(allData:Record<string,string>){
+export async function initBackgroundSelect(files?:BackgroundFile[],allData?:Record<string,string>){
+    console.log("BGimgSelect",BGimgSelect)
     if (!BGimgSelect)return;
-    ws_api?.on('background-files',(data)=>{
-        console.log('background-files',data)
+    if (!files || !Array.isArray(files))return;
+    files.map((item)=>{
+        const newOp = new Option(item.name, item.url);
+        BGimgSelect.add(newOp);
     })
+    if (!allData?.Background_img)return;
+    BGimgSelect.value = allData?.Background_img;
 }
 initSelects()

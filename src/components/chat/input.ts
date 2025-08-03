@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", initializeForm);
 const micVad = new MicrophoneControllerVAD();
 
 const micButton = document.getElementById("mic-toggle") as HTMLButtonElement;
-micButton.addEventListener("click", () => {
+micButton?.addEventListener("click", () => {
   if (micVad.isRunning) {
     micVad.pause();
   } else {

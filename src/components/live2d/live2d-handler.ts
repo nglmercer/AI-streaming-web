@@ -176,6 +176,7 @@ emitterData.on('model2d',async(string)=>{
 //setTiledBackground(defaulConfig.background);
 async function InitModel(){
     const saveModel = await configStorage.getAll();
+    if (!saveModel.model2d)saveModel.model2d = 'shizuku'
     const isUrl = isURL(saveModel.model2d);
     if (isUrl){
         loadModel(saveModel.model2d);
