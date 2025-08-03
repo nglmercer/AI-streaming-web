@@ -2,6 +2,10 @@ import { MicVAD } from "@ricky0123/vad-web";
 import { emitter } from "@utils/Emitter";
 
 // MicrophoneControllerVAD.ts
+function updateStatus(status: string) {
+  const statusLabel = document.getElementById("status-label") as HTMLSpanElement;
+  if (statusLabel) statusLabel.textContent = status;
+}
 export class MicrophoneControllerVAD {
   private vad: MicVAD | null = null;
   public isRunning = false; // <-- público para consultar estado
@@ -12,18 +16,16 @@ export class MicrophoneControllerVAD {
   }
 
   private async init() {
-    const statusLabel = document.getElementById("status-label") as HTMLSpanElement;
-
     this.vad = await MicVAD.new({
       onSpeechStart: () => {
         if (this.isPausedByUser) return;
-        statusLabel.textContent = "listening...";
+        updateStatus("listening...");
         this.updateMicIcon("mic");
         emitter.emit("vad:start");
       },
       onSpeechEnd: (audio) => {
         if (this.isPausedByUser) return;
-        statusLabel.textContent = "idle";
+        updateStatus("idle");
         this.updateMicIcon("mic_off");
         emitter.emit("vad:end", {
           buffer: audio,
@@ -37,8 +39,8 @@ export class MicrophoneControllerVAD {
       minSpeechFrames: 3,
     });
 
-    await this.vad.start();
-    this.isRunning = true;
+    //await this.vad.start();
+    this.isRunning = false;
     this.updateMicIcon("mic_alert");
   }
 

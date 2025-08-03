@@ -5,15 +5,17 @@ import { initBackgroundSelect } from '@components/sidebar/configUpdate';
 import { Subtitles, StateSubs } from "@components/Subtitles/subcore.ts";
 import { configStorage } from "@components/sidebar/listeners/formPersistence";
 const wsManager = new WsConnectionManager();
-const template = (text: string, type: string = 'text-input'): {
+const template = (text: string, type: string = 'text-input',id:any): {
   type: string;
   text: string;
   images: string[];
+  id:any;
 } => {
   return {
     type,
     text,
-    images: []
+    images: [],
+    id
   }
 }
 wsManager.on('connectionStatusChange', (state: ConnectionState) => {
@@ -107,6 +109,9 @@ const onMessages = async (data: Message) => {
         initBackgroundSelect(messageData.files,alldata);
       console.log("background-files", messageData);
       break;
+    case "complete":
+        console.log("completeTask?",messageData);
+        break;
     default:
       console.log("default", messageData);
       break;

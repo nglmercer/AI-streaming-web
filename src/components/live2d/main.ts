@@ -34,7 +34,7 @@ export function ModelActions(actions: RemovedValue[]) {
 emitter.on(
   "send:text-input",
   (data: { text: string; id: string | string[] }) => {
-    const templateData = template(data.text);
+    const templateData = template(data.text,'text-input',data.id);
     if (!ws_api) return;
     StateSubs("thinking...");
     ws_api.send(templateData);
