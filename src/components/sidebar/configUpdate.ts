@@ -1,12 +1,17 @@
 import { modelsApi } from "@utils/fetch/modelfetch";
 import { stringOptions,Modelconfig } from "@assets/defaultConfig";
 import { configStorage } from "./listeners/formPersistence";
+import { ws_api } from "@components/live2d/wsInstance";
 import apiConfig from "@utils/fetch/config/apiConfig";
 const modelSelect = document.getElementById('model2d') as HTMLSelectElement;
-
-async function initSelect() {
-    const options = modelSelect.options; // HTMLCollection de los <option>
-    console.log("options", options)
+const BGimgSelect = document.getElementById('Background_img') as HTMLSelectElement;
+async function initSelects() {
+        const allData = await configStorage.getAll()
+        initmodelSelect(allData)
+        initBackgroundSelect(allData)
+}
+async function initmodelSelect(allData:Record<string,string>) {
+    if (!modelSelect)return;
     modelSelect.innerHTML = '';
     const fetchListModels = await modelsApi.getModelList();
     const modelsOptions = [
@@ -18,7 +23,6 @@ async function initSelect() {
         }),
         ...Modelconfig.avaible
     ]
-    const allData = await configStorage.getAll()
     modelsOptions.forEach(op => {          
             const newOp = new Option(op.label, op.value, (allData.model2d === op.value));
             modelSelect.add(newOp);
@@ -29,6 +33,11 @@ async function initSelect() {
         });        
        modelSelect.value = allData.model2d;
     }   
-//    console.log("modelSelect", modelSelect,allData,modelSelect.selectedIndex)
 }
-initSelect()
+async function initBackgroundSelect(allData:Record<string,string>){
+    if (!BGimgSelect)return;
+    ws_api?.on('background-files',(data)=>{
+        console.log('background-files',data)
+    })
+}
+initSelects()

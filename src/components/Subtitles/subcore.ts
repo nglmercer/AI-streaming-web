@@ -92,3 +92,6 @@ export const Subtitles = {
     });
   },
 };
+export function StateSubs(state:string){
+    Subtitles.show({ text: state, position: Subtitles.POSITIONS.TOP_CENTER, duration: 2000 });
+}

@@ -1,7 +1,7 @@
 import { emitter } from "@utils/Emitter";
 import { MicrophoneControllerVAD } from "./MicrophoneControllerVAD";
 import { transcriptApi } from "@utils/fetch/fetchapi";
-import { StateSubs } from "@components/live2d/main";
+import { StateSubs } from "@components/Subtitles/subcore";
 console.log("emitter", "inited");
 function initializeForm() {
   const form = document.querySelector<HTMLFormElement>("#chat-form");
@@ -23,7 +23,7 @@ function sendTextMessage() {
   console.log("Input", Input);
   if (!Input) return;
   console.log(Input.value);
-  emitter.emit("send:text-input", Input.value);
+  SendQuestion(Input.value);
   Input.value = "";
 }
 document.addEventListener("DOMContentLoaded", initializeForm);
@@ -48,8 +48,12 @@ emitter.on(
       .transcribe({ type: "float32array", data: data.buffer })
       .then((res) => {
         console.log("res", res);
-        emitter.emit("send:text-input", res.transcript);
-        StateSubs(res.transcript);
+        SendQuestion(res.transcript);
       });
   }
 );
+export function SendQuestion(text:string, id?:string |string[]){
+    if(!text || typeof text !== 'string')return;
+    emitter.emit("send:text-input", {text,id});
+    StateSubs(text);
+}

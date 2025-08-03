@@ -79,7 +79,7 @@ export class WsClient extends Emitter {
 
   public send(data: string | object): void {
     if (this.state.status !== 'connected' || !this.ws) {
-      console.error(`[${this.id}] No se puede enviar, la conexión no está activa.`);
+      console.error(`[${this.id}] No se puede enviar, la conexión no está activa.`,data);
       return;
     }
 
