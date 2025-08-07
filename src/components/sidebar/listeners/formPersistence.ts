@@ -1,11 +1,37 @@
 // src/lib/formPersistence.ts
 
-import { DataStorage } from '@lib/core/storage';
-import { LocalStorageAdapter } from '@lib/core/local-storage-adapter';
+/* import { DataStorage } from '@lib/core/storage';
+import { LocalStorageAdapter } from '@lib/core/local-storage-adapter'; */
+import { DataStorage } from 'json-obj-manager';
+import { LocalStorageAdapter } from 'json-obj-manager/browser';
 import { Emitter } from '@utils/Emitter';
+import { allApiKeys,type ApiKey,ConfigID,type ProviderText,providersWithTextKeys } from '@assets/defaultConfig';
+import { configApi, aiModel } from '@utils/fetch/configapi';
 const emitterData = new Emitter();
 // 1. Instancia única del almacenamiento.
 const configStorage = new DataStorage<string>(new LocalStorageAdapter('config'));
+configStorage.setEmitMode('info');
+interface DataEvent {
+  key: string;
+  data: any;
+}
+configStorage.on('save', async ({key,data}:DataEvent) => {
+  if (!data)return;
+  if (allApiKeys.includes(key as ApiKey)){    
+    const savedata = await configStorage.getAll()
+    const SaveDataKeys = Object.fromEntries(
+      allApiKeys
+        .filter(key => savedata[key] !== undefined)
+        .map(key => [key, savedata[key]])
+    );
+    configApi.setConfig(SaveDataKeys);
+    console.log("configStorage change",key, data, SaveDataKeys);
+  }
+  if (key === ConfigID.AI_PROVIDER){
+    if (!providersWithTextKeys.find((p)=>p === data))return;
+    emitterData.emit(`update:${ConfigID.AI_MODEL}`,data);
+  }
+})
 
 // 2. Lógica para actualizar el display del select (la única lógica extra)
 function updateSelectDisplay(selectElement: HTMLSelectElement) {

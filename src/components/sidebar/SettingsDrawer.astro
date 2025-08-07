@@ -7,7 +7,15 @@ import SelectStatic from './SelectStatic.astro';
 import SelectSimple from './SelectSimple.astro'
 import NumberInput from './NumberInput.astro';
 import TextInput from './TextInput.astro';
-import { defaulConfig,langsOptions,Providers,stringOptions,Modelconfig,exactConfigdts  } from '@assets/defaultConfig';
+import { defaulConfig,langsOptions,Providers,stringOptions,Modelconfig,exactConfigdts,providerKeys,ConfigID  } from '@assets/defaultConfig';
+const configFields = Object.entries(providerKeys).map(([provider, keyName]) => ({
+  id: keyName,
+  label: `${provider.charAt(0).toUpperCase()}${provider.slice(1)} API Key`,
+  placeholder: `Ingresa tu ${provider} API key`,
+  value: '', // Aquí puedes obtener el valor de alguna store/config
+  keyName,
+  provider
+}));
 import { select_visible } from '@assets/classconst';
 const tabs = [
   { id: 'general', label: 'General' },
@@ -17,6 +25,7 @@ const tabs = [
   { id: 'tts', label: 'TTS' },
   { id: 'about', label: 'About' },
 ];
+
 ---
     <!-- Header -->
     <header class="flex items-center justify-between p-4 border-b border-gray-700">
@@ -55,10 +64,21 @@ const tabs = [
 
           <TextInput type="text" value={defaulConfig.ws_url} id="ws_url" label="WebSocket URL"/>
           <TextInput type="url" value={defaulConfig.base_url} id="base_url" label="Base URL"/>
-          <SelectStatic label="Language" id="lang" options={langsOptions} id="lang" label="Language" placeholder='Select Language'/>
-          <SelectStatic label="Model llm" id="Model_llm" options={stringOptions(Providers.llm)} label="Model" placeholder='Select Model llm'/>
-          <SelectSimple label="model 2d" id="model2d" placeholder='select your model'></SelectSimple>
-          <SelectSimple label="Background_img" id="Background_img" placeholder='select your bg'></SelectSimple>
+          <SelectStatic label="Language" id={ConfigID.LANG} options={langsOptions} label="Language" placeholder='Select Language'/>
+          <SelectSimple label="model 2d" id={ConfigID.MODEL2D} placeholder='select your model'></SelectSimple>
+          <SelectStatic label="AI provider" id={ConfigID.AI_PROVIDER} options={stringOptions(Providers.llm)} label="Model" placeholder='Select AI provider'/>
+          <SelectSimple label="AI model" id={ConfigID.AI_MODEL} options={[]} label="Model" placeholder='Select AI model'/>
+
+          <SelectSimple label="Background_img" id={ConfigID.BACKGROUND_IMG} placeholder='select your bg'></SelectSimple>
+              {configFields.map(field => (
+                <TextInput
+                  label={field.label}
+                  value={field.value}
+                  id={field.keyName}
+                  placeholder={field.placeholder}
+                  type="password"
+                />
+              ))}
         </div>
 
           <!-- Panel Live2D -->

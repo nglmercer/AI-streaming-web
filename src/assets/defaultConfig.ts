@@ -1,10 +1,40 @@
 import styleRules from './scheme/styleRules.json';
 import exactConfig from './characters/exact.json';
-import basePrompt from './scheme/basePrompt.json'
+import basePrompt from './scheme/basePrompt.json';
+// Tipos para autocompletado
+export type Provider = 'openai' | 'anthropic' | 'google' | 'deepseek' | 'mistral';
+export type ProviderText = Exclude<Provider, 'mistral'>;
+export type ApiKey = 'OPENAI_API_KEY' | 'ANTHROPIC_API_KEY' | 'GEMINI_API_KEY' | 'DEEPSEEK_API_KEY' | 'MISTRAL_API_KEY';
+
+// Mapeo simple clave-valor
+export const providerKeys: Record<Provider, ApiKey> = {
+  openai: 'OPENAI_API_KEY',
+  anthropic: 'ANTHROPIC_API_KEY',
+  google: 'GEMINI_API_KEY',
+  deepseek: 'DEEPSEEK_API_KEY',
+  mistral: 'MISTRAL_API_KEY',
+} as const;
+export const ConfigID = {
+  AI_PROVIDER: 'AI_provider',
+  AI_MODEL: 'AI_model',
+  LANG: 'lang',
+  WS_URL: 'ws_url',
+  BASE_URL: 'base_url',
+  MODEL2D: 'model2d',
+  BACKGROUND_IMG: 'Background_img',
+} as const;
+// Arrays derivados automáticamente
+export const allProviders = Object.keys(providerKeys) as Provider[];
+export const allApiKeys = Object.values(providerKeys);
+
+// Solo proveedores con text keys (excluye mistral)
+export const providersWithTextKeys = allProviders.filter(p => p !== 'mistral') as ProviderText[];
+
+// MISTRAL_API_KEY is used for asr(speech recognition)
 const Providers = {
     "asr": [],// api Required
-    "tts": ['edget-tts'],
-    "llm": ['google','openai','claude','deepseek']// api Required
+    "tts": ['edge-tts'],
+    "llm": allProviders// api Required
 }
 const stringOptions= (arrayString:string[])=>{
     return arrayString.map((item)=>{

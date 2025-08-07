@@ -1,15 +1,44 @@
 import { modelsApi } from "@utils/fetch/modelfetch";
-import { stringOptions,Modelconfig } from "@assets/defaultConfig";
-import { configStorage } from "./listeners/formPersistence";
+import { type ModelList,aiModel } from "@utils/fetch/configapi";
+import { stringOptions,Modelconfig,ConfigID } from "@assets/defaultConfig";
+import { allApiKeys,type ApiKey,type ProviderText,providersWithTextKeys } from '@assets/defaultConfig';
+
+import { configStorage,emitterData } from "./listeners/formPersistence";
 import { ws_api } from "@components/live2d/wsInstance";
 import type { BackgroundFile } from "@components/types/ws_model";
-import apiConfig from "@utils/fetch/config/apiConfig";
-const modelSelect = document.getElementById('model2d') as HTMLSelectElement;
-const BGimgSelect = document.getElementById('Background_img') as HTMLSelectElement;
+const modelSelect = document.getElementById(ConfigID.MODEL2D) as HTMLSelectElement;
+const BGimgSelect = document.getElementById(ConfigID.BACKGROUND_IMG) as HTMLSelectElement;
+const AImodelSelect = document.getElementById(ConfigID.AI_MODEL) as HTMLSelectElement;
+
+emitterData.on(`update:${ConfigID.AI_MODEL}`,async (data)=>{
+    const allData = await configStorage.getAll()
+    initAImodelSelect(allData);
+    console.log("AI_MODEL",data)
+})
+async function initAImodelSelect(allData:Record<string,string>) {
+        if (!AImodelSelect)return;
+        const models = await aiModel.getModels();
+        if (!models)return;
+        if (!providersWithTextKeys.find((p)=>p === allData[ConfigID.AI_PROVIDER]))return;
+        const modelsOptions = models.data[allData[ConfigID.AI_PROVIDER] as ProviderText]
+        if (!modelsOptions)return;
+        AImodelSelect.innerHTML = '';
+        console.log("models modelsOptions",models,modelsOptions);
+        modelsOptions.models.map((item)=>{
+            const newOp = new Option(item, item);
+            AImodelSelect.add(newOp);
+        })
+        if (allData[ConfigID.AI_MODEL]){
+            AImodelSelect.value = allData[ConfigID.AI_MODEL];
+        }
+
+}
 async function initSelects() {
         const allData = await configStorage.getAll()
         initmodelSelect(allData)
         initBackgroundSelect([],allData)
+        initAImodelSelect(allData);
+
 }
 async function initmodelSelect(allData:Record<string,string>) {
     if (!modelSelect)return;
@@ -35,6 +64,7 @@ async function initmodelSelect(allData:Record<string,string>) {
        modelSelect.value = allData.model2d;
     }   
 }
+
 export async function initBackgroundSelect(files?:BackgroundFile[],allData?:Record<string,string>){
     console.log("BGimgSelect",BGimgSelect)
     if (!BGimgSelect)return;

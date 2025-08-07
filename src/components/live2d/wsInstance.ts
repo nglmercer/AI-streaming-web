@@ -102,6 +102,7 @@ const onMessages = async (data: Message) => {
       Subtitles.show({
         text: JSON.stringify(messageData),
         position: Subtitles.POSITIONS.TOP_CENTER,
+        duration: 3000,
       });
       break;
     case "background-files":
