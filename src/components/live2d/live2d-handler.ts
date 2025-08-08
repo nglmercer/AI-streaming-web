@@ -8,8 +8,10 @@ import {
   MotionPriority   
 } from 'pixi-live2d-display-lipsyncpatch';
 import { configStorage,emitterData } from "../sidebar/listeners/formPersistence";
+import { ConfigID } from "@assets/defaultConfig";
 import { modelsApi } from "@utils/fetch/modelfetch";
 import { isURL } from "@utils/fetch/validtype";
+import apiConfig from "@utils/fetch/config/apiConfig";
 let currentModel: Live2DModel | null = null;
 
 // Obtener elementos del DOM (Asegúrate de que el script se cargue después de que el HTML exista)
@@ -29,10 +31,20 @@ const app = new PIXI.Application({
 
 async function setTiledBackground(src: string) {
     if (!canvas) return;
-    canvas.style.backgroundImage = `url(${src})`;
+    
+    if (!src || src.trim() === '') {
+        // Remove background if src is empty or undefined
+        canvas.style.backgroundImage = 'none';
+        canvas.style.backgroundSize = '';
+        console.log("Background removed");
+        return;
+    }
+
+    const imgUrl = apiConfig.getFullUrl() + src;
+    canvas.style.backgroundImage = `url(${imgUrl})`;
     canvas.style.backgroundSize = 'cover';
     
-    console.log("setTiledBackground",src,canvas);
+    console.log("setTiledBackground", imgUrl, canvas);
 }
 async function loadModel(url: string) {  
     toggleControls(false);  
@@ -171,11 +183,16 @@ emitterData.on('model2d',async(string)=>{
         if (!model)return
          loadModel(model);
     }
-    
+})
+emitterData.on(`${ConfigID.BACKGROUND_IMG}`,(string)=>{
+    setTiledBackground(string);
 })
 //setTiledBackground(defaulConfig.background);
 async function InitModel(){
     const saveModel = await configStorage.getAll();
+    if (saveModel[ConfigID.BACKGROUND_IMG]){
+        setTiledBackground(saveModel[ConfigID.BACKGROUND_IMG]);
+    }
     if (!saveModel.model2d)saveModel.model2d = 'shizuku'
     const isUrl = isURL(saveModel.model2d);
     if (isUrl){

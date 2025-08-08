@@ -64,7 +64,8 @@ async function initmodelSelect(allData:Record<string,string>) {
        modelSelect.value = allData.model2d;
     }   
 }
-
+const transparent = new Option('transparent','');
+BGimgSelect?.add(transparent);
 export async function initBackgroundSelect(files?:BackgroundFile[],allData?:Record<string,string>){
     console.log("BGimgSelect",BGimgSelect)
     if (!BGimgSelect)return;

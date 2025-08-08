@@ -92,7 +92,7 @@ const defaultPrompt = {
   think_tag: "",
   expression: ""
 };
-defaultPrompt["conf_name"]
 export type DefaultPrompt = typeof defaultPrompt;
-export const exactConfigdts = exactConfig as DefaultPrompt
+export const exactConfigdts = exactConfig as DefaultPrompt;
+console.log("exactConfigdts",exactConfigdts)
 export {defaulConfig,Providers,exacPrompt,langsOptions,stringOptions,Modelconfig, defaultPrompt }

@@ -31,6 +31,15 @@ configStorage.on('save', async ({key,data}:DataEvent) => {
     if (!providersWithTextKeys.find((p)=>p === data))return;
     emitterData.emit(`update:${ConfigID.AI_MODEL}`,data);
   }
+  if (key === ConfigID.MODEL2D){
+    configApi.setConfig({[ConfigID.MODEL2D]:data});
+  }
+  if (key === ConfigID.BACKGROUND_IMG){
+    emitterData.emit(`update:${ConfigID.BACKGROUND_IMG}`,data);
+  }
+  if (key.startsWith('AI_')){
+    configApi.setConfig({[key.replace('AI_','')]:data});
+  }
 })
 
 // 2. Lógica para actualizar el display del select (la única lógica extra)
